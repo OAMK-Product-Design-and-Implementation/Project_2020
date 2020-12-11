@@ -8,6 +8,17 @@ import databaseConnect as db
 from datetime import date, datetime
 import re, json
 
+#import base64
+#from base64 import b64encode
+#import os, os.path
+
+import imageFileHandler as ifh
+
+#import io
+#import pillow
+
+img_save_path = "/home/ubuntu/images/"
+
 app = flask.Flask(__name__)
 #app.config["DEBUG"] = True
 
@@ -25,6 +36,69 @@ def home():
 
 # New queries for TestDatabase start
 #
+################### Images ######################
+
+# Post an image by idDevice (image base64 included to db)
+@app.route('/api/devices/post/image64', methods=['POST'])
+def postDevicesImage64():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = '''INSERT INTO Images (Devices_idDevice, Names, images) 
+                VALUES ("{}", "{}", "{}")'''.format(
+                    content['Devices_idDevice'],
+                    content['Names'],
+                    content['images']) 
+    db.sqlInsert(query)
+    return "Post successful"
+
+# Post an image by idDevice (base64 decoded and saved to a directory)
+@app.route('/api/devices/post/image', methods=['POST'])
+def postDevicesImage():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    devID = content["Devices_idDevice"] 
+    fileName = content["Names"]
+    fileData = content["images"]
+    # Save image
+    ifh.saveImage(fileName, fileData)
+    query = '''INSERT INTO Images (Devices_idDevice, Names) 
+                VALUES ("{}", "{}")'''.format(devID, fileName)
+    db.sqlInsert(query)
+    return "Post successful"
+
+@app.route('/api/imagesbytime/get/<timest>', methods=['GET']) 
+def getImageByTime(timest):
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = '''SELECT Devices.DeviceName, Images.Names, Devices_idDevice FROM Devices LEFT JOIN Images 
+                ON Devices.idDevice = Images.Devices_idDevice WHERE Images.Timestamp > "{}"'''.format(timest)
+    fileNames = db.sqlQuery(query)
+    img_rawdata = ifh.getMultipleImages(fileNames) # TODO: fix internal server errors: imageFileHandler.py
+    return jsonify(img_rawdata) 
+
+@app.route('/api/images/get/<deviceid>', methods=['GET'])
+def getImage(deviceid):
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = '''SELECT Names FROM Images WHERE Devices_idDevice = "{}" ORDER BY Timestamp DESC LIMIT 1'''.format(deviceid)
+    fileName = db.sqlQuery(query)
+    img_rawdata = ifh.getImage(fileName)       
+    return jsonify(img_rawdata) 
+
+# Get image table
+@app.route('/api/images/get/table', methods=['GET'])
+def getImageTable():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = "SELECT Names, Timestamp, Devices_idDevice FROM Images ORDER BY Timestamp DESC"
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
 
 ##################################################
 ################### General ######################
@@ -159,7 +233,8 @@ def getRuuvitagLatest(deviceid):
     LEFT JOIN Measurements ON Devices.idDevice = Measurements.Devices_idDevice
     LEFT JOIN Battery ON Devices.idDevice = Battery.Devices_idDevice 
     LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice 
-    WHERE Devices.idDevice = {} ORDER BY GREATEST(Measurements.Timestamp, Door_status.Timestamp) DESC'''.format(deviceid)
+    WHERE Devices.idDevice = {} AND Devices.DeviceType = "ruuvitag" 
+    ORDER BY GREATEST(Measurements.Timestamp, Door_status.Timestamp) DESC LIMIT 1'''.format(deviceid)
     data = db.sqlQuery(query)
     return jsonify(data)
 
@@ -254,7 +329,37 @@ def getStationHistory(timest):
     return jsonify(data)
 
 ##################################################
-############## Ruuvitag start #################
+############## Ruuvitag start ####################
+
+# Get doors
+@app.route('/api/ruuvi/get/doors', methods=['GET'])
+def getDoors():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = "SELECT * FROM Door"
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
+# Get door status
+@app.route('/api/ruuvi/get/doorstatus', methods=['GET'])
+def getDoorsStatus():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = "SELECT * FROM Door_status ORDER BY Timestamp DESC"
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
+# Get measurements
+@app.route('/api/ruuvi/get/measurements', methods=['GET'])
+def getDoorMeasurements():
+    print (request.is_json)
+    content = request.get_json()
+    print(content)
+    query = "SELECT * FROM Measurements ORDER BY Timestamp DESC"
+    data = db.sqlQuery(query)
+    return jsonify(data)
 
 # Assign a door for Ruuvitag
 @app.route('/api/ruuvi/post/newdoor', methods=['POST'])
