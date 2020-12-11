@@ -31,8 +31,8 @@ def dict_factory(cursor, row):
 
 @app.route('/', methods=['GET'])
 def home():
-    return '''<h1>Distant Reading Archive</h1>
-<p>A prototype API for distant reading of science fiction novels.</p>'''
+    return '''<h1>Product Implementation Project</h1>
+<p>Contact Admin for API access</p>'''
 
 # New queries for TestDatabase start
 #
@@ -73,11 +73,19 @@ def getImageByTime(timest):
     print (request.is_json)
     content = request.get_json()
     print(content)
-    query = '''SELECT Devices.DeviceName, Images.Names, Devices_idDevice FROM Devices LEFT JOIN Images 
+    query = '''SELECT Devices.DeviceName, Images.Names, Devices_idDevice, date_format(Images.Timestamp, '%Y-%m-%d %T') FROM Devices LEFT JOIN Images 
                 ON Devices.idDevice = Images.Devices_idDevice WHERE Images.Timestamp > "{}"'''.format(timest)
+    
     fileNames = db.sqlQuery(query)
+
     img_rawdata = ifh.getMultipleImages(fileNames) # TODO: fix internal server errors: imageFileHandler.py
-    return jsonify(img_rawdata) 
+
+    i = 0
+    for image in img_rawdata:
+        imageData = fileNames[i][:4] + (img_rawdata[i],)
+        i = i + 1
+    print(imageData)
+    return jsonify(imageData) 
 
 @app.route('/api/images/get/<deviceid>', methods=['GET'])
 def getImage(deviceid):

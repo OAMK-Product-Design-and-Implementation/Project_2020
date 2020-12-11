@@ -5,12 +5,12 @@ import json
 # also more can be made for more specific use cases
 LINUX = True
 
-if LINUX == False:
-    getUrl = 'http://195.148.21.106/api/testi/get/all'
+if LINUX == True:
+    getUrl = 'http://195.148.21.106/api/imagesbytime/get/2020-12-09 06:39:04'
     getSpecificUrl = 'http://195.148.21.106/api/testi/get/'
     postUrl = 'http://195.148.21.106/api/testi/post/newDevice'
 else:
-    getUrl = 'http://127.0.0.1:5000/api/testi/get/all'
+    getUrl = 'http://127.0.0.1:5000/api/imagesbytime/get/2020-12-09 19:21:33'
     getSpecificUrl = 'http://127.0.0.1:5000/api/testi/get/'
     postUrl = 'http://127.0.0.1:5000/api/testi/post/newDevice'
 
@@ -47,7 +47,7 @@ def postExample():
         if i == 3:
             uInput[i] = raw_input("Give a string: ")
 
-            
+        
     # Example for a json object. For compatibility with server don't change the strings between " "
     jsonExample = {
                     "testinumeroINT": uInput[0],

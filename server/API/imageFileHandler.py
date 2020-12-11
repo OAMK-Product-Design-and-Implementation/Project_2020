@@ -5,17 +5,8 @@ import re
 import json
 from base64 import b64encode
 
-<<<<<<< HEAD
-fileLocation = "/home/ubuntu/images"
-fileType = "jpg"
-
-=======
-fileLocationTrue = "C://Users//teemu//OneDrive//Asiakirjat//Koulujuttuja//testImage.jpg"
 fileLocation = "/home/ubuntu/images/"
-fileType = "jpg"
 
-#imagename = ["testImage", "testImage - Copy"]
->>>>>>> bf3289ae3a2dab7466e6ac487ae8e2c1effd66ee
 #get single image according to the name. Returns it in base64 format
 def getImage(fileName):
     try:
@@ -38,21 +29,23 @@ def getImage(fileName):
 # Gets multiple images according to the given image names. Returns it in base64 format with imagename attached.
 # returns the whole data in json format.
 def getMultipleImages(fileNames):
-    imageFiles = {"images": []}
+    imageFiles = []
     for name in fileNames:
         try:
-            fileName = name.strip() # TODO: fix AttributeError(s): 'tuple' object has no attribute 'strip'
-            filepath = os.path.join(fileLocation+name+"."+fileType) # TypeError: cannot concatenate 'str' and 'tuple' objects
+            filepath = os.path.join(fileLocation+str(name[1]))
+            print(filepath)
             with open(filepath, "rb") as image:
                 imageFile = str(base64.b64encode(image.read()))
-                imageFiles["images"].append({name:imageFile}) 
+                imageFiles.append(imageFile) 
             image.close()
         
         except IOError:
-            print("File " + name + " not found")
-    images = json.dumps(imageFiles)
+            print("File " + str(name[1]) + " not found")
 
-    return images
+    return imageFiles
+
+
+
 
 # Saves image on the disk
 def saveImage(fileName, fileData):
@@ -78,6 +71,3 @@ def getImageSQLQueryDeviceID(deviceID):
     imageNames = imageNames.split(" ")
 
     return imageNames
-
-
-#getMultipleImages(imagename)
