@@ -80,7 +80,7 @@ def getImageByTime(timest):
 
     img_rawdata = ifh.getMultipleImages(fileNames) # TODO: fix internal server errors: imageFileHandler.py
 
-    i = 0
+    i = 0 # TO DO: FIX This part has issues
     for image in img_rawdata:
         imageData = fileNames[i][:4] + (img_rawdata[i],)
         i = i + 1
