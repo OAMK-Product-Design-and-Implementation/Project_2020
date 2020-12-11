@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/server/API/old/ApiTester.py
+.vs/VSWorkspaceState.json
+.vs/slnx.sqlite-journal
+.vs/slnx.sqlite
+.vs/Projekti_syksy_2020/v16/Browse.VC.opendb
+.vs/Projekti_syksy_2020/v16/Browse.VC.db
+.vs/Projekti_syksy_2020/v16/.suo

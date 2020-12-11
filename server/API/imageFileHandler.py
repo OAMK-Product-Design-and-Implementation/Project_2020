@@ -4,11 +4,9 @@ import databaseConnect as db
 import re
 import json
 
-fileLocationTrue = "C://Users//teemu//OneDrive//Asiakirjat//Koulujuttuja//testImage.jpg"
-fileLocation = "C:/Users/teemu/OneDrive/Asiakirjat/Koulujuttuja/"
+fileLocation = "/home/ubuntu/images"
 fileType = "jpg"
 
-imagename = ["testImage", "testImage - Copy"]
 #get single image according to the name. Returns it in base64 format
 def getImage(fileName):
     try:
@@ -68,4 +66,4 @@ def getImageSQLQueryDeviceID(deviceID):
     return imageNames
 
 
-getMultipleImages(imagename)
+#getMultipleImages(imagename)
