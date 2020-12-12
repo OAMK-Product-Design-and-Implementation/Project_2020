@@ -59,10 +59,14 @@ ThemeData getAppTheme(BuildContext context, bool isDark) {
           color: _onBackgroundColor,
         ),
         headline1: TextStyle(
-          color: _onBackgroundColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 25.0,
+          color: Colors.grey,
         ),
         headline2: TextStyle(
-          color: _onBackgroundColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 25.0,
+          color: _accentColor,
         ),
         headline3: TextStyle(
           color: _onBackgroundColor,
@@ -119,10 +123,14 @@ ThemeData getAppTheme(BuildContext context, bool isDark) {
         color: _onBackgroundColorDarkMode,
       ),
       headline1: TextStyle(
-        color: _onBackgroundColorDarkMode,
+        fontWeight: FontWeight.bold,
+        fontSize: 25.0,
+        color: Colors.grey,
       ),
       headline2: TextStyle(
-        color: _onBackgroundColorDarkMode,
+        fontWeight: FontWeight.bold,
+        fontSize: 25.0,
+        color: _accentColorDark,
       ),
       headline3: TextStyle(
         color: _onBackgroundColorDarkMode,

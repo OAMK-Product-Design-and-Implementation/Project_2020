@@ -50,14 +50,30 @@ class StatusSection extends StatelessWidget {
                   ListTile(
                     title: Text(model.statusSectionTitle,
                         style: Theme.of(context).textTheme.headline5),
-                    trailing: Text(model.status ? 'Occupied' : 'Empty'),
+                    trailing: model.status
+                        ? Text(
+                            'Occupied',
+                            style: Theme.of(context).textTheme.headline2,
+                          )
+                        : Text(
+                            'Empty',
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
                   ),
                   ListTile(
                     title: Text(
                       'Device at station:',
                       style: Theme.of(context).textTheme.headline5,
                     ),
-                    trailing: Text(model.status ? model.name : '-----'),
+                    trailing: model.status
+                        ? Text(
+                            model.name,
+                            style: Theme.of(context).textTheme.headline2,
+                          )
+                        : Text(
+                            '-----',
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
                   ),
                 ],
               ),
@@ -99,22 +115,13 @@ class LatestSection extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Container(
+                              margin: EdgeInsets.symmetric(horizontal: 18),
+                              alignment: Alignment.centerRight,
                               child: Row(
                                 children: [
-                                  Icon(Icons.commute),
-                                  Text(model.recentDevice.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(vertical: 14.0),
-                              alignment: Alignment.center,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.lock_clock),
+                                  Container(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Icon(CupertinoIcons.clock)),
                                   Text(
                                       timeFormat
                                           .format(model.recentDevice.timestamp),
@@ -122,6 +129,23 @@ class LatestSection extends StatelessWidget {
                                           .textTheme
                                           .bodyText2),
                                 ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(left: 30),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.only(right: 4),
+                                      child: Icon(Icons.directions_car_rounded),
+                                    ),
+                                    Text(model.recentDevice.name,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -195,16 +219,30 @@ class HistoryItem extends StatelessWidget {
         child: device.id == -5
             ? CircularProgressIndicator()
             : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(children: [
-                    Icon(Icons.car_rental),
-                    Text(device.name),
-                  ]),
-                  Row(children: [
-                    Icon(Icons.timer),
-                    Text(timeFormat.format(device.timestamp)),
-                  ]),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 18),
+                    alignment: Alignment.centerRight,
+                    child: Row(children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 4),
+                        child: Icon(CupertinoIcons.clock),
+                      ),
+                      Text(timeFormat.format(device.timestamp)),
+                    ]),
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(left: 30),
+                      child: Row(children: [
+                        Container(
+                          padding: EdgeInsets.only(right: 4),
+                          child: Icon(Icons.directions_car_rounded),
+                        ),
+                        Text(device.name),
+                      ]),
+                    ),
+                  ),
                 ],
               ),
         alignment: Alignment.center,
