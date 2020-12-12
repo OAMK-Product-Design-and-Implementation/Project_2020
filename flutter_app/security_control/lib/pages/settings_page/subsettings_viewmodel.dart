@@ -8,12 +8,13 @@ import 'package:security_control/services/server_sync_service.dart';
 import 'package:security_control/services/service_locator.dart';
 import 'package:security_control/services/local_storage_service.dart';
 import 'package:security_control/services/messages_sync_service.dart';
+import 'package:security_control/services/sensor_sync_service.dart';
 
 class SubSettingsViewModel extends ChangeNotifier {
-
   NavigationService _navigationService = locator<NavigationService>();
   LocalStorageService _localStorageService = locator<LocalStorageService>();
   MessagesSyncService _messagesSyncService = locator<MessagesSyncService>();
+  SensorSyncService _sensorSyncService = locator<SensorSyncService>();
 
   String _serverSettingsLabel = "Server settings";
   String _notificationSettingsLabel = "Notifications";
@@ -40,17 +41,17 @@ class SubSettingsViewModel extends ChangeNotifier {
   String get intruderAlertsLabel => _intruderAlertsLabel;
   String get lowBatteryAlertsLabel => _lowBatteryAlertsLabel;
 
-  setReceiveNotifications(bool enabled){
+  setReceiveNotifications(bool enabled) {
     _receiveNotifications = enabled;
     notifyListeners();
   }
 
-  setReceiveIntruderAlerts(bool enabled){
+  setReceiveIntruderAlerts(bool enabled) {
     _receiveIntruderAlerts = enabled;
     notifyListeners();
   }
 
-  setReceiveLowBatteryAlerts(bool enabled){
+  setReceiveLowBatteryAlerts(bool enabled) {
     _receiveLowBatteryAlerts = enabled;
     notifyListeners();
   }
@@ -60,7 +61,8 @@ class SubSettingsViewModel extends ChangeNotifier {
   double _serverUpdateInterval = 5;
   double _maxServerUpdateInterval = 120;
   double _minServerUpdateInterval = 1;
-  TextEditingController _serverAddressEditingController = TextEditingController();
+  TextEditingController _serverAddressEditingController =
+      TextEditingController();
   String _serverAddress = "192.168.0.1";
   String _serverAddressDialogTitle = "Set server address";
   String _serverAddressDialogHintLabel = "E.g. 192.168.0.1";
@@ -72,11 +74,14 @@ class SubSettingsViewModel extends ChangeNotifier {
   double get serverUpdateInterval => _serverUpdateInterval;
   double get maxServerUpdateInterval => _maxServerUpdateInterval;
   double get minServerUpdateInterval => _minServerUpdateInterval;
-  TextEditingController get serverAddressEditingController => _serverAddressEditingController;
+  TextEditingController get serverAddressEditingController =>
+      _serverAddressEditingController;
   String get serverAddressDialogTitle => _serverAddressDialogTitle;
   String get serverAddressDialogHintLabel => _serverAddressDialogHintLabel;
-  String get serverAddressDialogConfirmButtonLabel => _serverAddressDialogConfirmButtonLabel;
-  String get serverAddressDialogCancelButtonLabel => _serverAddressDialogCancelButtonLabel;
+  String get serverAddressDialogConfirmButtonLabel =>
+      _serverAddressDialogConfirmButtonLabel;
+  String get serverAddressDialogCancelButtonLabel =>
+      _serverAddressDialogCancelButtonLabel;
   String get serverAddressLabel => _serverAddressLabel;
   String get serverAddress => _serverAddress;
 
@@ -94,8 +99,6 @@ class SubSettingsViewModel extends ChangeNotifier {
   String get serverString => _serverString;
 
   void initialise() {
-
-
     _localStorageService.serverAddress.listen((value) {
       _serverAddress = value;
       notifyListeners();
@@ -122,7 +125,7 @@ class SubSettingsViewModel extends ChangeNotifier {
     //   }
     // }
 
-    _serverString =  "initialised";
+    _serverString = "initialised";
     // TODO: How do we unsubscribe when we dispose of viewmodel?
     // Now this is causing errors after viewmodel is disposed, since it is
     //   still listening...
@@ -144,14 +147,16 @@ class SubSettingsViewModel extends ChangeNotifier {
       _goPiGo = _localStorageService.goPiGoExample;
       notifyListeners();
     });
-    print('(TRACE) SubSettingsViewModel:initialise.'+ _localStorageService.goPiGoExampleString.getValue());
+    print('(TRACE) SubSettingsViewModel:initialise.' +
+        _localStorageService.goPiGoExampleString.getValue());
     _goPiGo = _localStorageService.goPiGoExample;
     //_localStorageService.goPiGoExample = _goPiGo;
     //setServerAddress();
-    _serverUpdateInterval = _localStorageService.serverUpdateInterval.getValue().toDouble();
+    _serverUpdateInterval =
+        _localStorageService.serverUpdateInterval.getValue().toDouble();
   }
 
-  setServerAddress(){
+  setServerAddress() {
     _serverAddress = _serverAddressEditingController.text;
     _localStorageService.serverAddress.setValue(_serverAddress);
     _serverSyncService.stopSync();
@@ -160,25 +165,28 @@ class SubSettingsViewModel extends ChangeNotifier {
 
   // Call this to update the interval to viewmodel
   // YOU MUST CALL saveServerUpdateInterval() later to save to preferences!
-  setServerUpdateInterval(double value){
+  setServerUpdateInterval(double value) {
     _serverUpdateInterval = value;
     notifyListeners();
   }
+
   // Save value to preferences
-  saveServerUpdateInterval(){
-    _localStorageService.serverUpdateInterval.setValue(_serverUpdateInterval.round());
+  saveServerUpdateInterval() {
+    _localStorageService.serverUpdateInterval
+        .setValue(_serverUpdateInterval.round());
     //_serverSyncService.setUpdateInterval(_serverUpdateInterval);
     notifyListeners();
   }
 
-  stopSync(){
+  stopSync() {
     _serverSyncService.stopSync();
     _messagesSyncService.stopSync();
+    _sensorSyncService.stopSync();
   }
 
-  startSync(){
+  startSync() {
     _serverSyncService.startSync();
     _messagesSyncService.startSync();
+    _sensorSyncService.startSync();
   }
-
 }

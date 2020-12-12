@@ -1,108 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:security_control/models/ruuvitag.dart';
+import 'package:security_control/services/service_locator.dart';
+import 'package:security_control/services/sensor_sync_service.dart';
 
 class SensorsViewModel extends BaseViewModel {
-  String _title = "SensorsPage<temp>"; //TODO FINAL: replace temp title
+  var _sensorSyncService = locator<SensorSyncService>();
+  List _ruuvitaglist;
+  @override
+  String _title = "Sensors"; //TODO FINAL: replace temp title
   String get title => _title;
+  List get ruuvitaglist => _ruuvitaglist;
+  initialise() {
+    _sensorSyncService.ruuviTagListMapStream.listen((event) {
+      _ruuvitaglist = event.values.toList();
+      notifyListeners();
+    });
+
+    _ruuvitaglist = _sensorSyncService.ruuviTagListMap.values.toList();
+  }
 }
 
-class StatusSectionViewModel extends BaseViewModel {
-  String _statusSectionTitle = "'Ruuvitag Section Here";
+class StatusSectionViewModel extends SensorsViewModel {
+  //BaseViewModel {
+  String _statusSectionTitle = "RuuviTags";
   String get statusSectionTitle => _statusSectionTitle;
-  //TODO generate _ruuvitaglist from server
-  final _ruuvitaglist = <RuuviTag>[
-    RuuviTag(
-      id: 1,
-      name: 'test1',
-      batterylevel: 23,
-      temperature: 25.0,
-      humidity: 15,
-      pressure: 20,
-    ),
-    RuuviTag(
-      id: 2,
-      name: 'test2',
-      batterylevel: 46,
-      temperature: 30.0,
-      humidity: 30,
-      pressure: 195,
-    ),
-    RuuviTag(
-      id: 3,
-      name: 'test14',
-      batterylevel: 100,
-      temperature: 16.0,
-      humidity: 80,
-      pressure: 100,
-    ),
-    RuuviTag(
-      id: 1,
-      name: 'test15',
-      batterylevel: 27,
-      temperature: -10.0,
-      humidity: 5,
-      pressure: 10,
-    ),
-  ];
-  List<RuuviTag> get gopigolist => _ruuvitaglist;
+
+  void updateSensorMeasurements(RuuviTag device, double newBattery,
+      double newTemperature, double newPressure, double newHumidity) {
+    device.setCurrentBatteryLevel(newBattery);
+    device.setCurrentTemperature(newTemperature);
+    device.setCurrentPressure(newPressure);
+    device.setCurrentHumidity(newHumidity);
+    notifyListeners();
+  }
 }
 
 class RuuviTagSettingsViewModel extends BaseViewModel {
   RuuviTag _tempDevice = new RuuviTag();
   RuuviTag _device;
   get name => _tempDevice.name;
-  get batterylevel => _tempDevice.batterylevel;
-  get temperature => _tempDevice.temperature;
-  get humidity => _tempDevice.humidity;
-  get pressure => _tempDevice.pressure;
-
   get id => _tempDevice.id;
+
+  double get batterylimit => _tempDevice.batterylevel.lowerLimit;
+  double get tempLowerLimit => _tempDevice.temperature.lowerLimit;
+  double get tempUpperLimit => _tempDevice.temperature.upperLimit;
+  double get humiLowerLimit => _tempDevice.humidity.lowerLimit;
+  double get humiUpperLimit => _tempDevice.humidity.upperLimit;
+  double get presLowerLimit => _tempDevice.pressure.lowerLimit;
+  double get presUpperLimit => _tempDevice.pressure.upperLimit;
 
   Object get device => _tempDevice;
 
-  //GET CURRENT RANGE VALUES (lowerLimit,upperLimit)
-  RangeValues _currentRangeValues = RangeValues(-10, 30);
+  batterySlider(BuildContext context, device) {
+    Widget batteryLimitSlider = Slider(
+      value: batterylimit,
+      min: 0,
+      max: 100,
+      divisions: 100,
+      label: batterylimit.round().toString(),
+      onChanged: (double value) {
+        sliderUpdate('battery', 0, value);
+      },
+    );
+    return batteryLimitSlider;
+  }
 
-  temperatureRangeSlider(BuildContext context) {
+  temperatureRangeSlider(BuildContext context, device) {
     Widget temperatureLimitSlider = RangeSlider(
-        values: _currentRangeValues != null
-            ? _currentRangeValues
-            : RangeValues(0, 30),
+        values: RangeValues(tempLowerLimit, tempUpperLimit),
         min: -100,
         max: 100,
         divisions: 200,
         labels: RangeLabels(
-          _currentRangeValues.start.round().toString(),
-          _currentRangeValues.end.round().toString(),
+          tempLowerLimit.round().toString(),
+          tempUpperLimit.round().toString(),
         ),
         onChanged: (RangeValues values) {
-          sliderUpdate('uppertemp', values.end);
-          _currentRangeValues = values;
-
-          //setLowerTempLimit = values.start;
-          //setUpperTempLimit = values.end;
+          sliderUpdate('temperature', values.end, values.start);
         });
     return temperatureLimitSlider;
   }
 
-  void sliderUpdate(String type, double newValue) {
+  humidityRangeSlider(BuildContext context, device) {
+    Widget humidityLimitSlider = RangeSlider(
+        values: RangeValues(humiLowerLimit, humiUpperLimit),
+        min: 0,
+        max: 100,
+        divisions: 100,
+        labels: RangeLabels(
+          humiLowerLimit.round().toString(),
+          humiUpperLimit.round().toString(),
+        ),
+        onChanged: (RangeValues values) {
+          sliderUpdate('humidity', values.end, values.start);
+        });
+    return humidityLimitSlider;
+  }
+
+  pressureRangeSlider(BuildContext context, device) {
+    Widget pressureLimitSlider = RangeSlider(
+        values: RangeValues(presLowerLimit, presUpperLimit),
+        min: 0,
+        max: 1500,
+        divisions: 150,
+        labels: RangeLabels(
+          presLowerLimit.round().toString(),
+          presUpperLimit.round().toString(),
+        ),
+        onChanged: (RangeValues values) {
+          sliderUpdate('pressure', values.end, values.start);
+        });
+    return pressureLimitSlider;
+  }
+
+  void sliderUpdate(String type, double upper, double lower) {
     switch (type) {
       case 'battery':
-        _tempDevice.setBatteryLevel(newValue);
+        _tempDevice.setBatteryLimit(lower);
         break;
-      case 'uppertemp':
-        _tempDevice.setTemperatureLimit(newValue);
-        //_tempDevice.setUpperTemperatureLimit(newValue);
-        break;
-      case 'lowertemp':
-        //_tempDevice.setLowerTemperatureLimit(newValue);
+      case 'temperature':
+        _tempDevice.setTemperatureLimits(upper, lower);
         break;
       case 'humidity':
-        _tempDevice.setHumidityLimit(newValue);
+        _tempDevice.setHumidityLimits(upper, lower);
         break;
       case 'pressure':
-        _tempDevice.setPressureLimit(newValue);
+        _tempDevice.setPressureLimits(upper, lower);
         break;
     }
     notifyListeners();
@@ -116,20 +140,45 @@ class RuuviTagSettingsViewModel extends BaseViewModel {
   void setdevice(RuuviTag device) {
     _tempDevice.setName(device.name);
     _tempDevice.setId(device.id);
-    _tempDevice.setBatteryLevel(device.batterylevel);
-    _tempDevice.setTemperatureLimit(device.temperature);
-    _tempDevice.setHumidityLimit(device.humidity);
-    _tempDevice.setPressureLimit(device.pressure);
+    _tempDevice.setCurrentBatteryLevel(device.batterylevel.current);
+    _tempDevice.setCurrentTemperature(device.temperature.current);
+    _tempDevice.setCurrentHumidity(device.humidity.current);
+    _tempDevice.setCurrentPressure(device.pressure.current);
+    _tempDevice.setBatteryLimit(device.batterylevel.lowerLimit);
+    _tempDevice.setTemperatureLimits(
+        device.temperature.upperLimit, device.temperature.lowerLimit);
+    _tempDevice.setHumidityLimits(
+        device.humidity.upperLimit, device.humidity.lowerLimit);
+    _tempDevice.setPressureLimits(
+        device.pressure.upperLimit, device.pressure.lowerLimit);
     _device = device;
     print('setdevice ${device.name}');
   }
 
+  //POST NEW LIMITS
   void updateSettings() {
     print('GoPiGoSettingsViewModel/updateSettings');
-    _device.setBatteryLevel(_tempDevice.batterylevel);
-    _device.setTemperatureLimit(_tempDevice.temperature);
-    _device.setHumidityLimit(_tempDevice.humidity);
-    _device.setPressureLimit(_tempDevice.pressure);
     _device.setName(_tempDevice.name);
+    _device.setNewLimits(
+        _tempDevice.temperature.upperLimit,
+        _tempDevice.temperature.lowerLimit,
+        _tempDevice.humidity.upperLimit,
+        _tempDevice.humidity.lowerLimit,
+        _tempDevice.pressure.upperLimit,
+        _tempDevice.pressure.lowerLimit,
+        _tempDevice.batterylevel.lowerLimit,
+        _tempDevice.id);
+
+    print("RUUVITAG NAME SET : " +
+        _tempDevice.name +
+        "SET NEW RUUVITAG LIMITS : " +
+        '${_tempDevice.temperature.upperLimit},' +
+        '${_tempDevice.temperature.lowerLimit},' +
+        '${_tempDevice.humidity.upperLimit},' +
+        '${_tempDevice.humidity.lowerLimit},' +
+        '${_tempDevice.pressure.upperLimit},' +
+        '${_tempDevice.pressure.lowerLimit},' +
+        '${_tempDevice.batterylevel.lowerLimit},' +
+        '${_tempDevice.id}');
   }
 }
