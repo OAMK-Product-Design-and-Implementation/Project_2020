@@ -79,13 +79,15 @@ def getImageByTime(timest):
     fileNames = db.sqlQuery(query)
 
     img_rawdata = ifh.getMultipleImages(fileNames) # TODO: fix internal server errors: imageFileHandler.py
-
-    i = 0 # TO DO: FIX This part has issues
-    for image in img_rawdata:
-        imageData = fileNames[i][:4] + (img_rawdata[i],)
-        i = i + 1
-    print(imageData)
-    return jsonify(imageData) 
+    try:
+        i = 0 # TO DO: FIX This part has issues
+        for image in img_rawdata:
+            imageData = fileNames[i][:4] + (img_rawdata[i],)
+            i = i + 1
+        print(imageData)
+        return jsonify(imageData)
+    except:
+        return "Image handling failed"
 
 @app.route('/api/images/get/<deviceid>', methods=['GET'])
 def getImage(deviceid):
