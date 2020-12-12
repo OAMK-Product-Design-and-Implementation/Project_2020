@@ -77,15 +77,16 @@ def getImageByTime(timest):
                 ON Devices.idDevice = Images.Devices_idDevice WHERE Images.Timestamp > "{}"'''.format(timest)
     
     fileNames = db.sqlQuery(query)
-
     img_rawdata = ifh.getMultipleImages(fileNames) # TODO: fix internal server errors: imageFileHandler.py
     try:
         i = 0 # TO DO: FIX This part has issues
+        wholeData = []
         for image in img_rawdata:
             imageData = fileNames[i][:4] + (img_rawdata[i],)
+            wholeData.append(imageData)
             i = i + 1
         print(imageData)
-        return jsonify(imageData)
+        return jsonify(wholeData)
     except:
         return "Image handling failed"
 
