@@ -24,7 +24,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -58,12 +65,18 @@ public class ServerSyncWorker extends Worker {
         Log.d(DEBUG_TAG, "Got server addr. from prefs:" + serverAddress);
         Random random = new Random();
 
-        if (serverAddress.equals("")) {
+        String url = "http://" + serverAddress + "/api/devices/get/activemessages";
+        String getResponse;
+
+        try {
+            getResponse = downloadContent(url);
+        } catch (IOException e) {
+            Log.d(DEBUG_TAG, "Unable to retrieve data: " + e.toString());
             // Send notification?
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("Could not sync with server")
-                    .setContentText("Tap to open Security Control")
+                    .setContentText("Make sure server address is correct")
                     .setPriority(NotificationCompat.PRIORITY_HIGH);
 
             PendingIntent contentIntent = PendingIntent.getActivity(applicationContext, 0,
@@ -72,42 +85,84 @@ public class ServerSyncWorker extends Worker {
             mBuilder.setContentIntent(contentIntent);
 
             notificationManager.notify(123, mBuilder.build());
-
-
-
             return Result.retry();
-        } else {
-            // Sync.
-            // Instantiate the RequestQueue.
-            String getResponse;
-            RequestQueue queue = Volley.newRequestQueue(applicationContext);
-            String url = "http://" + serverAddress + "/api/devices/get/activemessages";
+        }
 
-            // Request a string response from the provided URL.
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            // Display the first 500 characters of the response string.
-                            Log.d(DEBUG_TAG, "Response is: " + response.toString());
-                            ArrayList msgList = jsonToMessageList(response.toString());
-                            volleyComplete(msgList);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // Add error notification here?
-                    Log.d(DEBUG_TAG, "ERROR on GET message from server" + error.toString());
-                }
-            });
-
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest);
-
-
-
+        Log.d(DEBUG_TAG, "Response is: " + getResponse);
+        ArrayList msgList = jsonToMessageList(getResponse.toString());
+        boolean resultComplete = volleyComplete(msgList);
+        if(resultComplete == true){
             return Result.success();
         }
+        else{
+            return Result.retry();
+        }
+
+//        if (serverAddress.equals("")) {
+//
+//
+//        } else {
+//            // Sync.
+//            // Instantiate the RequestQueue.
+//            RequestQueue queue = Volley.newRequestQueue(applicationContext);
+//
+//            // Request a string response from the provided URL.
+//            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//                            // Display the first 500 characters of the response string.
+//                            Log.d(DEBUG_TAG, "Response is: " + response.toString());
+//                            ArrayList msgList = jsonToMessageList(response.toString());
+//                            volleyComplete(msgList);
+//                        }
+//                    }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    // Add error notification here?
+//                    Log.d(DEBUG_TAG, "ERROR on GET message from server" + error.toString());
+//                }
+//            });
+//
+//            // Add the request to the RequestQueue.
+//            queue.add(stringRequest);
+//
+//            return Result.success();
+//        }
+    }
+
+    private String downloadContent(String myurl) throws IOException {
+        InputStream is = null;
+        int length = 500;
+
+        try {
+            URL url = new URL(myurl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.connect();
+            int response = conn.getResponseCode();
+            Log.d(DEBUG_TAG, "The response is: " + response);
+            is = conn.getInputStream();
+
+            // Convert the InputStream into a string
+            String contentAsString = convertInputStreamToString(is, length);
+            return contentAsString;
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+    }
+
+    public String convertInputStreamToString(InputStream stream, int length) throws IOException, UnsupportedEncodingException {
+        Reader reader = null;
+        reader = new InputStreamReader(stream, "UTF-8");
+        char[] buffer = new char[length];
+        reader.read(buffer);
+        return new String(buffer);
     }
 
     ArrayList jsonToMessageList(String msg){
@@ -131,16 +186,18 @@ public class ServerSyncWorker extends Worker {
         return msgArray;
     }
 
-    void volleyComplete(ArrayList msgList) {
+    boolean volleyComplete(ArrayList msgList) {
         boolean sendNotification = false;
         boolean intruderAlert = false;
 
         Context applicationContext = getApplicationContext();
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(applicationContext);
         ArrayList oneMessageList = new ArrayList();
-        ArrayList criticalActions = new ArrayList(); // Stores only errors and intruder
+        ArrayList criticalActions = new ArrayList(); // Stores only errors
+        ArrayList intruderAlerts = new ArrayList(); // Stores only intruders
 
         String notificationContent = "";
+        String notificationSubContent = "";
 
         if (msgList != null) {
             Log.d(DEBUG_TAG, msgList.get(0).getClass().toString());
@@ -148,33 +205,44 @@ public class ServerSyncWorker extends Worker {
             for(int i = 0; i < msgList.size(); i++){
                 oneMessageList = jsonToMessageList(msgList.get(i).toString());
 
-                if(oneMessageList.get(1).equals("Error")){ // TODO: CHANGE Messagetype to server group's definition
+                // Info messages will not trigger notification:
+                if(oneMessageList.get(1).equals("Error")){
                     sendNotification = true;
                     criticalActions.add(oneMessageList);
                 }
                 else if(oneMessageList.get(1).equals("Intruder")){
                     sendNotification = true;
-                    criticalActions.add(oneMessageList);
+                    intruderAlerts.add(oneMessageList);
                     intruderAlert = true;
                 }
             }
 
             if(criticalActions.size() == 1){
-                notificationContent = "Action required: " + criticalActions.get(1).toString();
+                oneMessageList = (ArrayList) criticalActions.get(0);
+                notificationContent = "Action required: " + oneMessageList.get(4).toString(); // deviceName
+                notificationSubContent = oneMessageList.get(2).toString(); // Explanation
             }
             else if(criticalActions.size() > 1){
                 notificationContent = Integer.toString(criticalActions.size()) + " actions required";
+                notificationSubContent = "Tap to open Security Control";
             }
 
-            if(intruderAlert == true){
+            if(intruderAlerts.size() > 0){
                 notificationContent = "INTRUDER ALERT";
+                if (intruderAlerts.size() == 1){
+                    oneMessageList = (ArrayList) intruderAlerts.get(0);
+                    notificationSubContent = oneMessageList.get(2).toString();
+                }
+                else {
+                    notificationSubContent = Integer.toString(intruderAlerts.size()) + " intruder alerts";
+                }
             }
 
             if(sendNotification = true){
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(notificationContent)
-                        .setContentText("Tap to open Security Control")
+                        .setContentText(notificationSubContent)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true);
                 PendingIntent contentIntent = PendingIntent.getActivity(applicationContext, 0,
@@ -185,5 +253,6 @@ public class ServerSyncWorker extends Worker {
                 notificationManager.notify(1234, mBuilder.build());
             }
         }
+        return true;
     }
 }

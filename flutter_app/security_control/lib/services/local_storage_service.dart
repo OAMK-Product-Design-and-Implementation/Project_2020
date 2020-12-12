@@ -10,6 +10,7 @@ import 'package:streaming_shared_preferences/streaming_shared_preferences.dart';
 
 // Source for STREAMING: https://pub.dev/packages/streaming_shared_preferences
 
+// The following plan is DEPRECATED, please disregard:
 // This is how we will do the actual data handling:
 // We have a class, e.g. GoPiGo, which will have all the data we need for GoPiGo's.
 // Each class will handle the conversion from/to Json, since the data we get from
@@ -31,7 +32,6 @@ class LocalStorageService {
   static const String ServerUpdateIntervalKey = 'updateinterval';
   static const String ServerAddressKey = 'serveraddress';
 
-  static const String GoPiGoExampleKey = 'gopigoexample'; // TODO:remove later
 
   static Future<LocalStorageService> getInstance() async{
     if (_instance == null){
@@ -49,22 +49,22 @@ class LocalStorageService {
   Preference<String> get serverAddress => _getFromDisk(ServerAddressKey, "195.148.21.106");
 
 
-  //TODO:remove later
-  Preference<String> get goPiGoExampleString {
-    Preference<String> gopigoJson = _getFromDisk(GoPiGoExampleKey, "");
-    return gopigoJson;
-  }
-  // TODO: Get list of gopigos parsed from JSON
-  GoPiGoExample get goPiGoExample {
-    Preference<String> gopigoJson = _getFromDisk(GoPiGoExampleKey, "");
-    if(gopigoJson.getValue() == ""){
-        return GoPiGoExample(id: "",battery: 0,location: 0);
-    }
-    return GoPiGoExample.fromJson(json.decode(gopigoJson.getValue()));
-  }
-  set goPiGoExample(GoPiGoExample goPiGo){
-    _saveToDisk(GoPiGoExampleKey, json.encode(goPiGo.toJson()));
-  }
+  // //TODO:remove later
+  // Preference<String> get goPiGoExampleString {
+  //   Preference<String> gopigoJson = _getFromDisk(GoPiGoExampleKey, "");
+  //   return gopigoJson;
+  // }
+
+  // GoPiGoExample get goPiGoExample {
+  //   Preference<String> gopigoJson = _getFromDisk(GoPiGoExampleKey, "");
+  //   if(gopigoJson.getValue() == ""){
+  //       return GoPiGoExample(id: "",battery: 0,location: 0);
+  //   }
+  //   return GoPiGoExample.fromJson(json.decode(gopigoJson.getValue()));
+  // }
+  // set goPiGoExample(GoPiGoExample goPiGo){
+  //   _saveToDisk(GoPiGoExampleKey, json.encode(goPiGo.toJson()));
+  // }
 
   // Generic get method:
   dynamic _getFromDisk(String key, var defaultVal) {
@@ -112,27 +112,27 @@ class LocalStorageService {
   }
 
 }
-
-
-// TODO: This is an example of saved data, remove/change
-// {"id": "unique","battery": -108228463,"location": 1}
-class GoPiGoExample {
-  final String id;
-  final int battery;
-  final int location;
-  GoPiGoExample({this.id, this.battery, this.location});
-
-  GoPiGoExample.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        battery = json['battery'],
-        location = json['location'];
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['battery'] = this.battery;
-    data['location'] = this.location;
-    return data;
-  }
-}
-
+//
+//
+// // TODO: This is an example of saved data, remove/change
+// // {"id": "unique","battery": -108228463,"location": 1}
+// class GoPiGoExample {
+//   final String id;
+//   final int battery;
+//   final int location;
+//   GoPiGoExample({this.id, this.battery, this.location});
+//
+//   GoPiGoExample.fromJson(Map<String, dynamic> json)
+//       : id = json['id'],
+//         battery = json['battery'],
+//         location = json['location'];
+//
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = new Map<String, dynamic>();
+//     data['id'] = this.id;
+//     data['battery'] = this.battery;
+//     data['location'] = this.location;
+//     return data;
+//   }
+// }
+//

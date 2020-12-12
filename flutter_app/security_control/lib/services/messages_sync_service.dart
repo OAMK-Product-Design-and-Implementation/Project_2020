@@ -227,7 +227,7 @@ class _SyncMessageIsolate {
     var response;
     try{
       response =
-      await _client.get(_address + "/api/devices/get/activemessages");
+        await _client.get(_address + "/api/devices/get/activemessages");
     }
     catch(err){
       print(_debugTag + "ERROR: Unable to fetch messages from server:" + err.toString());
@@ -242,20 +242,20 @@ class _SyncMessageIsolate {
   void clearMessage(int id)async{
     var response;
     String body;
-    // TODO: Uncomment clear message POST method
-    // try{
+
+    try{
       body = '{"idMessage":"' + id.toString() + '"}';
       print(_debugTag + "Sending POST to clear message with id: " + id.toString() + ". Body to send: " + body);
-    //   response = await _client.post(_address + "/api/message/post/messageinactive",
-    //       headers: {"Content-Type": "application/json"},
-    //       body: body);
-    // }
-    // catch(err){
-    //   print(_debugTag + "ERROR: Unable to POST clear message with id: " + id.toString() + ": " + err.toString());
-    // }
-    // finally{
-    //   print(_debugTag + "POST response clear message with id: " +id.toString() + ": " + response.body);
-    // }
+      response = await _client.post(_address + "/api/message/post/messageinactive",
+          headers: {"Content-Type": "application/json"},
+          body: body);
+    }
+    catch(err){
+      print(_debugTag + "ERROR: Unable to POST clear message with id: " + id.toString() + ": " + err.toString());
+    }
+    finally{
+      print(_debugTag + "POST response clear message with id: " +id.toString() + ": " + response.body);
+    }
   }
 
   void setGoPiGoIDList(List IDList){

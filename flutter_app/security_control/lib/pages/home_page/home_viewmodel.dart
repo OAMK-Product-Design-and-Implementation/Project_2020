@@ -130,6 +130,7 @@ class HomeViewModel extends ChangeNotifier {
   initialise() {
     _messagesSyncService.messageListStream.listen((event) {
       actionsRequired = event;
+      //_intruderAlert = false;
       _criticalActionsCount = 0;
       for(Message action in actionsRequired){
         if(action.messageType == "Intruder"){
@@ -170,7 +171,7 @@ class HomeViewModel extends ChangeNotifier {
     );
     AlertDialog actions = AlertDialog(
       scrollable: true,
-      title: Text("Notification(s)"),
+      title: Text("Notifications"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

@@ -22,25 +22,11 @@ class ServerSettingsPage extends StatelessWidget {
                       padding: EdgeInsets.only(top: 8),
                       children: [
                         serverAddressTileAnimated(context, model),
-                        // Divider(),
-                        // menuSwitchListTile("This does nothing", context, null),
-                        //TODO: Re-implement these so that only necessary widgets update themselves... Something weird happens now on update.
                         Divider(),
                         //TODO: Preferences are still updated while sliding, maybe the widget is rebuilding?
                         menuSliderListItem(model.serverUpdateIntervalLabel, context, model.setServerUpdateInterval,
                             model.serverUpdateInterval, model.maxServerUpdateInterval, model.minServerUpdateInterval,
                             model.saveServerUpdateInterval()),
-                        // RaisedButton(
-                        //   child: Text(model.serverAddress),
-                        //   onPressed: (){model.setServerUpdateInterval(10);},
-                        // )
-                        Row(
-                          children: [
-                            Text(model.serverString, style: Theme.of(context).textTheme.headline2),
-                            // Text(model.goPiGo.battery.toString()),
-                            // Text(model.goPiGo.location.toString())
-                          ],
-                        ),
                         FlatButton(onPressed: model.stopSync, child: Text("STOP SYNC")),
                         FlatButton(onPressed: model.startSync, child: Text("START SYNC"))
                       ],
@@ -61,13 +47,5 @@ Widget serverAddressTileAnimated(context, model){
         },
      subtitle: Text(model.serverAddress)
   );
-
-
-  // showModal(context: context, configuration: const FadeScaleTransitionConfiguration(),
-  // useRootNavigator: true,
-  // builder: (context){
-  //   return requestTextAlertDialog(model.serverAddressDialogTitle, model.serverAddressDialogHintLabel, model.serverAddressDialogConfirmButtonLabel, model.serverAddressDialogCancelButtonLabel,
-  //       model.setServerAddress, model.serverAddressEditingController);
-  // });
 
 }

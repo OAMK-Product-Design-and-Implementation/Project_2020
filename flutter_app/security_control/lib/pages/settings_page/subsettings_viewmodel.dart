@@ -91,8 +91,6 @@ class SubSettingsViewModel extends ChangeNotifier {
   int _goPiGoLocation;
   List _goPiGoIDList;
   List _goPiGoList;
-  GoPiGoExample _goPiGo;
-  GoPiGoExample get goPiGo => _goPiGo;
 
   ServerSyncService _serverSyncService = locator<ServerSyncService>();
   String _serverString;
@@ -127,6 +125,8 @@ class SubSettingsViewModel extends ChangeNotifier {
 
     _serverString = "initialised";
     // TODO: How do we unsubscribe when we dispose of viewmodel?
+    // This was worker around by not disposing viewmodel after leaving the page
+
     // Now this is causing errors after viewmodel is disposed, since it is
     //   still listening...
     // _serverSyncService.receiveBroadcastStream.listen((message) {
@@ -142,16 +142,6 @@ class SubSettingsViewModel extends ChangeNotifier {
     //   }
     // });
 
-    //TODO: Demo, remove:
-    _localStorageService.goPiGoExampleString.listen((value) {
-      _goPiGo = _localStorageService.goPiGoExample;
-      notifyListeners();
-    });
-    print('(TRACE) SubSettingsViewModel:initialise.' +
-        _localStorageService.goPiGoExampleString.getValue());
-    _goPiGo = _localStorageService.goPiGoExample;
-    //_localStorageService.goPiGoExample = _goPiGo;
-    //setServerAddress();
     _serverUpdateInterval =
         _localStorageService.serverUpdateInterval.getValue().toDouble();
   }

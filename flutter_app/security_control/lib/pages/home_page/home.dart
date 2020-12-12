@@ -108,10 +108,7 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                     ),
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                    ),
+                    Divider(),
                     ListTile(
                       leading: model.actionsRequired.length > 0
                           ? Icon(Icons.info,
