@@ -1,26 +1,23 @@
 class History {
-  int id;
-  String name;
-  DateTime timestamp;
+  int _id = 0;
+  String _name;
+  DateTime _timestamp;
 
-  int get getId => id;
-  String get getName => name;
-  DateTime get getTimestamp => timestamp;
+  History(this._name, this._timestamp);
 
-  void setId(int i) => id = i;
-
-  History({
-    this.id,
-    this.name,
-    this.timestamp,
-  });
-
-  //TODO
-  factory History.fromJson(Map<String, dynamic> json) {
-    return History(
-      id: 155,
-      name: 'stub',
-      timestamp: DateTime.now(),
-    );
+  History.empty();
+  History.loading() {
+    _id = -5;
   }
+
+  History.fromJson(String name, String timestamp) {
+    this._name = name;
+    this._timestamp = DateTime.parse(timestamp);
+  }
+
+  int get id => _id;
+  String get name => _name;
+  DateTime get timestamp => _timestamp;
+
+  void setId(int i) => _id = i;
 }

@@ -6,6 +6,7 @@ import 'package:security_control/services/local_storage_service.dart';
 import 'package:security_control/services/gopigo_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
 import 'package:security_control/services/messages_sync_service.dart';
+import 'package:security_control/services/history_service.dart';
 
 /*
   "Using get_it, class types can be registered in two ways.
@@ -36,4 +37,7 @@ Future setupLocator() async {
 
   var messagesSyncInstance = MessagesSyncService();
   locator.registerSingleton<MessagesSyncService>(messagesSyncInstance);
+  //history
+  var historySyncInstance = HistorySyncService();
+  locator.registerSingleton<HistorySyncService>(historySyncInstance);
 }

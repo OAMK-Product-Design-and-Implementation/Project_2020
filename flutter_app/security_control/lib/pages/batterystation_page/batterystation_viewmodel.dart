@@ -1,84 +1,103 @@
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
-import 'package:security_control/models/gopigo.dart';
-import 'package:security_control/services/gopigo_service.dart';
+import 'package:security_control/models/history.dart';
+import 'package:security_control/services/history_service.dart';
 import 'package:security_control/services/service_locator.dart';
 
-DateFormat timeFormat =
-    DateFormat('yyyy/MM/dd  hh:mm'); //TODO this better locate in theme.dart?
+DateFormat timeFormat = DateFormat('yyyy/MM/dd  HH:mm');
 
-class BatterystationViewModel extends FutureViewModel<List<GoPiGo>> {
-  final _gopigoService = locator<GoPiGoService>();
-  @override
-  Future<List<GoPiGo>> futureToRun() => _gopigoService.getGoPiGoInfo();
+class BatterystationViewModel extends BaseViewModel {
+  var _historyService = locator<HistorySyncService>();
   String _title = "Batterystation";
+  List _items = [];
+
   String get title => _title;
-}
+  List get items => _items;
 
-class StatusSectionViewModel extends BatterystationViewModel {
-  GoPiGo _temp = new GoPiGo.empty();
-  String _statusSectionTitle = "Latest Battery Change";
-  String get statusSectionTitle => _statusSectionTitle;
+  BatterystationViewModel() {
+    print('BatterystationViewModel Constructor');
+    if (!(_items.length > 0)) {
+      _showLoadingIndicator();
+    }
+  }
+  initialise() {
+    print('BatterystationViewModel initialise');
+    _historyService.getHistory(DateTime.now());
+    print('_items.length: ${_items.length}');
+  }
 
-  GoPiGo get recentDevice {
-    //TODO _gopigoService.recentBatteryChange
-    for (var i in _gopigoService.devices)
-      if (i.getTimestamp.isAfter(_temp.getTimestamp)) _temp = i;
-    return _temp;
+  listener() async {
+    //Start update listener
+    print('BatterystationViewModel Start update listener');
+    _historyService.historyListStream.listen((event) {
+      _items.addAll(event);
+      _removeLoadingIndicator();
+      notifyListeners();
+    });
+  }
+
+  void _showLoadingIndicator() {
+    print('loading indicator added');
+    _items.add(History.loading());
+    notifyListeners();
+  }
+
+  void _removeLoadingIndicator() {
+    _items.removeWhere((element) => element.id == -5);
+    notifyListeners();
   }
 }
 
+class StatusSectionViewModel extends BatterystationViewModel {
+  String _name;
+  bool _status = false;
+  String _statusSectionTitle = "Current status:";
+
+  String get name => _name;
+  bool get status => _status;
+  String get statusSectionTitle => _statusSectionTitle;
+
+  @override
+  listener() async {
+    //Start update listener
+    print('StatusSectionViewModel Start update listener');
+    _historyService.statusListStream.listen((event) {
+      event[0] == 1 ? _status = true : _status = false;
+      _name = event[1];
+      print("status updated: $_status $_name");
+      notifyListeners();
+    });
+  }
+
+  StatusSectionViewModel() {
+    _historyService.getStatus();
+  }
+}
+
+class LatestSectionViewModel extends BatterystationViewModel {
+  String _latestSectionTitle = "Latest Battery Change";
+  String get latestSectionTitle => _latestSectionTitle;
+  History get recentDevice => _items.first;
+}
+
 class HistorySectionViewModel extends BatterystationViewModel {
-  static const int ItemRequestThreshold = 10;
+  int itemRequestThreshold = 10;
   DateTime _shownHistory = DateTime.now();
-  List<GoPiGo> _items;
-  List<GoPiGo> get items => _items;
 
   String _historySectionTitle = "History";
   String get historySectionTitle => _historySectionTitle;
 
   Future handleHistoryItemCreated(int index) async {
+    // if (_items.length < itemRequestThreshold)
+    //   itemRequestThreshold = _items.length;
     var itemPosition = index + 1;
     var requestMoreData =
-        itemPosition % ItemRequestThreshold == 0 && itemPosition != 0;
-    var pageToRequest = _items.last.getTimestamp;
-    if (requestMoreData && _shownHistory.isAfter(pageToRequest)) {
-      print('pageToRequest: ${timeFormat.format(pageToRequest)}');
+        itemPosition % itemRequestThreshold == 0 && itemPosition != 0;
+    var pageToRequest = _items.last.timestamp ?? DateTime.now();
+    if ((requestMoreData && _shownHistory.isAfter(pageToRequest))) {
+      // print('pageToRequest: ${timeFormat.format(pageToRequest)}');
       _shownHistory = pageToRequest;
-      _showLoadingIndicator();
-      await Future.delayed(
-          Duration(seconds: 5)); //TODO wait server response, not fixed time
-      var newFetchedItems = List<GoPiGo>.generate(
-          10,
-          (index) => GoPiGo(
-              1,
-              'test cars$index',
-              27));
-      _items.addAll(newFetchedItems);
-      _removeLoadingIndicator();
+      await _historyService.getHistory(pageToRequest);
     }
-  }
-
-  void _showLoadingIndicator() {
-    _items.add(GoPiGo(-5, "s", 1));
-    notifyListeners();
-    GoPiGo(2, "name", 2);
-  }
-
-  void _removeLoadingIndicator() {
-    // _items.remove(GoPiGo(name: LoadingIndicatorTitle));
-    _items.removeWhere((element) => element.id == -5);
-    // (element) => element.name.compareTo(LoadingIndicatorTitle) == 0);
-    notifyListeners();
-  }
-
-  //Generating the first gopigo history list, need to get this from service
-  HistorySectionViewModel() {
-    _items = List<GoPiGo>.generate(
-        5,
-        (index) => GoPiGo(
-            1,
-            'test cars$index',
-            27));
   }
 }
