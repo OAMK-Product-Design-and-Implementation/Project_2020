@@ -334,7 +334,7 @@ def getStationHistory(timest):
     print(content)
     query = '''SELECT Devices.DeviceName, date_format(Charger_Status.Timestamp, '%Y-%m-%d %T')
                 FROM Devices INNER JOIN Charger_Status ON Devices.idDevice = Charger_Status.Devices_idDevice 
-                WHERE Charger_Status.Timestamp < "{}" LIMIT 10'''.format(timest)
+                WHERE Charger_Status.Timestamp < "{}" ORDER BY Charger_Status.Timestamp DESC LIMIT 10'''.format(timest)
     data = db.sqlQuery(query)   # 2020-12-01 12:12:12 (yyyy-mm-dd hh:mm:ss) timestamp format as input
     return jsonify(data)
 
