@@ -38,7 +38,7 @@ while True:
             "Humidity": humidity,
             "AirPressure": pressure}
 
-        print("macAddr =", mac)
+        print("macAddr", mac)
 
         x = requests.post(postUrl, json = j_file)
 
