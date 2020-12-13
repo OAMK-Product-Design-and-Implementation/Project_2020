@@ -11,8 +11,8 @@ class History {
   }
 
   History.fromJson(String name, String timestamp) {
-    this._name = name;
-    this._timestamp = DateTime.parse(timestamp);
+    this._name = name ?? '-----';
+    this._timestamp = DateTime.parse(timestamp ?? '0000.0.0 00:00');
   }
 
   int get id => _id;
