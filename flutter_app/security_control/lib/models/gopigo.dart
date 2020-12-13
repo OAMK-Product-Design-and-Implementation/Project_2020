@@ -11,6 +11,9 @@ class GoPiGo {
 
   GoPiGo(this._id, this._name, this._batterylevel);
   GoPiGo.empty();
+  GoPiGo.loading() {
+    _id = -5;
+  }
 
   GoPiGo.fromJson(String content, this._id,
       [Function(int, String) updateNameCallBack]) {
