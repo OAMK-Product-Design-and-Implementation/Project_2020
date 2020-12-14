@@ -2,7 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/picture_service.dart';
 import 'package:security_control/services/local_storage_service.dart';
-import 'package:security_control/services/gopigo_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
 import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/sensor_sync_service.dart';
@@ -27,7 +26,6 @@ GetIt locator = GetIt.instance;
 Future setupLocator() async {
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => PictureService());
-  locator.registerLazySingleton(() => GoPiGoService());
 
   var instance = await LocalStorageService.getInstance();
   locator.registerSingleton<LocalStorageService>(instance);

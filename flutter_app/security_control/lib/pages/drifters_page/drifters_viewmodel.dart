@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:security_control/pages/drifters_page/drifters.dart';
-import 'package:security_control/services/gopigo_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:security_control/models/gopigo.dart';
 import 'package:security_control/services/service_locator.dart';
@@ -58,7 +57,7 @@ class DriftersViewModel extends BaseViewModel {
 
 class MapSectionViewModel extends DriftersViewModel {
   String _title = "Map Section ViewModel";
-  String _mapPath = "lib/images/kulkureitti.png";
+  String _mapPath = "lib/images/gopigorata.png";
   double _boxHeight = 222.0;
   @override
   String get title => _title;
@@ -71,21 +70,21 @@ class MapSectionViewModel extends DriftersViewModel {
   ///  (2*400/1200)-1 = [-0,33] & (2*312/640)-1 = [-0,025]
   /// [Alignment(-0.33 , -0,025)] gets the correct position
   var _locationsMap = {
-    '1': Alignment(0.289583, -0.783295),
-    '2': Alignment(0.289583, 0.649152),
-    '3': Alignment(-0.40395, 0.649152),
-    '4': Alignment(-0.40395, -0.783295),
-    'A': Alignment(-0.09375, -0.430744),
-    'B': Alignment(0.24395, -0.13654),
-    'C': Alignment(-0.0783, 0.26074),
-    'D': Alignment(-0.45195, -0.08654),
-    'A1': Alignment(0.14037, -0.430744),
-    'B2': Alignment(0.14037, 0.26074),
-    'C3': Alignment(-0.47395, 0.26074),
-    'D4': Alignment(-0.47395, -0.430744),
+    '0': Alignment(0.2204861, 0.58681),
+    '1': Alignment(-0.0434, 0.7926),
+    '2': Alignment(0.69965, 0.88906),
+    '3': Alignment(0.69965, 0.22025),
+    '4': Alignment(-0.0434, 0.11093),
+    '5': Alignment(0.2204861, 0.599678),
+    '6': Alignment(0.2204861, 0.599678),
+    '7': Alignment(-0.0434, 0.26074),
+    '8': Alignment(-0.8350, -0.08654),
+    '9': Alignment(-0.8350, 0.22025),
+    '10': Alignment(0.14037, 0.22025),
+    '11': Alignment(-0.47395, 0.26074),
+    //TODO remove temporary positions
     'Latauspaikka': Alignment(0.5625, -0.14506),
     'lost': Alignment(-0.95, -1),
-    //TODO remove temporary positions
     'charge_station': Alignment(0.5625, -0.14506),
     'hall_00': Alignment(-0.45195, -0.08654),
   };

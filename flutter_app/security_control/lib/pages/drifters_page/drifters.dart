@@ -39,33 +39,29 @@ class MapSection extends StatelessWidget {
           print('MapSection built');
           return Card(
             clipBehavior: Clip.antiAlias,
-            child: SizedBox(
-              //TODO make this dynamic size for bigger/smaller screens
-              height: model.height,
-              child: Stack(
-                children: [
-                  SizedBox(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Image.asset(model.map),
-                    ),
+            child: Stack(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Image.asset(model.map),
                   ),
-                  Container(
-                    //temp animate car2
-                    child: AnimatedAlign(
-                        curve: Curves.fastOutSlowIn,
-                        duration: Duration(milliseconds: 500),
-                        alignment: model.location['2'],
-                        child: Icon(
-                          Icons.local_taxi,
-                          size: 16,
-                        )),
-                  ),
-                  for (var item in model.gopigolist)
-                    //check not loading element
-                    if (item.id != -5) mapIconPlacer(context, model, item),
-                ],
-              ),
+                ),
+                Container(
+                  //temp animate car2
+                  child: AnimatedAlign(
+                      curve: Curves.fastOutSlowIn,
+                      duration: Duration(milliseconds: 500),
+                      alignment: model.location['2'],
+                      child: Icon(
+                        Icons.local_taxi,
+                        size: 26,
+                      )),
+                ),
+                for (var item in model.gopigolist)
+                  //check not loading element
+                  if (item.id != -5) mapIconPlacer(context, model, item),
+              ],
             ),
           );
         },
