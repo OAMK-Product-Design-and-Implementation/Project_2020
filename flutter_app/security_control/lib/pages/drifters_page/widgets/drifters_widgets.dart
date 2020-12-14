@@ -9,10 +9,10 @@ Widget mapIconPlacer(context, model, device) {
     child: AnimatedAlign(
         curve: Curves.fastOutSlowIn,
         duration: Duration(milliseconds: 500),
-        alignment: model.location[device?.location ?? 'lost'],
+        alignment: model?.location[device?.location] ?? model.location['lost'],
         child: Icon(
           Icons.local_taxi,
-          size: 16,
+          size: 26,
         )),
   );
 }
@@ -59,7 +59,7 @@ Widget gopigoListTileAnimated(context, device, model) {
       return ViewModelBuilder<GoPiGoSettingsViewModel>.reactive(
         initialiseSpecialViewModelsOnce: true,
         builder: (context, model, child) {
-          if (device.id != model.id) model.setdevice(device); //TODO
+          if (device.id != model.id) model.setdevice(device);
           print(
               'GoPiGoSettingsViewModel for [${device.name}]/[${model.name}] built');
           return Scaffold(

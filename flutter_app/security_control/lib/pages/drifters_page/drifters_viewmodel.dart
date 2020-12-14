@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:security_control/pages/drifters_page/drifters.dart';
 import 'package:stacked/stacked.dart';
 import 'package:security_control/models/gopigo.dart';
 import 'package:security_control/services/service_locator.dart';
@@ -14,14 +13,6 @@ class DriftersViewModel extends BaseViewModel {
   String _title = "GoPigo Patrollers";
   List get gopigolist => _gopigolist;
   String get title => _title;
-
-  initialise() {
-    // _serverSyncService.goPiGoListMapStream.listen((event) {
-    //   _gopigolist = event.values.toList();
-    //   notifyListeners();
-    // });
-    _gopigolist = _serverSyncService.goPiGoListMap.values.toList();
-  }
 
   listener() async {
     //Start update listener
@@ -39,11 +30,6 @@ class DriftersViewModel extends BaseViewModel {
   void _showLoadingIndicator() {
     print('loading indicator added');
     _gopigolist.add(GoPiGo.loading());
-    notifyListeners();
-  }
-
-  void _removeLoadingIndicator() {
-    _gopigolist.removeWhere((element) => element.id == -5);
     notifyListeners();
   }
 
@@ -70,23 +56,24 @@ class MapSectionViewModel extends DriftersViewModel {
   ///  (2*400/1200)-1 = [-0,33] & (2*312/640)-1 = [-0,025]
   /// [Alignment(-0.33 , -0,025)] gets the correct position
   var _locationsMap = {
-    '0': Alignment(0.2204861, 0.58681),
-    '1': Alignment(-0.0434, 0.7926),
-    '2': Alignment(0.69965, 0.88906),
-    '3': Alignment(0.69965, 0.22025),
-    '4': Alignment(-0.0434, 0.11093),
-    '5': Alignment(0.2204861, 0.599678),
-    '6': Alignment(0.2204861, 0.599678),
-    '7': Alignment(-0.0434, 0.26074),
-    '8': Alignment(-0.8350, -0.08654),
-    '9': Alignment(-0.8350, 0.22025),
-    '10': Alignment(0.14037, 0.22025),
-    '11': Alignment(-0.47395, 0.26074),
+    '0': Alignment(0.2204861, 0.68681),
+    '1': Alignment(0.0434, 0.8926),
+    '2': Alignment(-0.2325694, -0.0755627),
+    '3': Alignment(-0.2325694, -0.7808),
+    '4': Alignment(-0.0086, -0.875466),
+    '5': Alignment(0.2204861, -0.35530),
+    '6': Alignment(0.2204861, 0.31993),
+    '7': Alignment(0.0434, 0.44639),
+    '8': Alignment(-0.7850, 0.31993),
+    '9': Alignment(-0.7850, -0.7808),
+    '10': Alignment(0.72340, -0.7808),
+    '11': Alignment(0.79340, 0.31993),
+    'lost': Alignment(-0.80, -1),
     //TODO remove temporary positions
-    'Latauspaikka': Alignment(0.5625, -0.14506),
-    'lost': Alignment(-0.95, -1),
-    'charge_station': Alignment(0.5625, -0.14506),
-    'hall_00': Alignment(-0.45195, -0.08654),
+    'Latauspaikka': Alignment(-0.95, -1),
+    'charge_station': Alignment(-0.95, -1),
+    'hall_00': Alignment(-0.95, -1),
+    'hall_toimii': Alignment(-0.95, -1),
   };
 
   get location => _locationsMap;

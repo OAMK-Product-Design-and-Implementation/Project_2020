@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'drifters_viewmodel.dart';
 import 'package:stacked/stacked.dart';
-import 'package:animations/animations.dart';
+import 'drifters_viewmodel.dart';
 import 'widgets/drifters_widgets.dart';
 
 class DriftersPage extends StatelessWidget {
@@ -39,29 +38,28 @@ class MapSection extends StatelessWidget {
           print('MapSection built');
           return Card(
             clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                Expanded(
-                  child: Align(
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Stack(
+                children: [
+                  Align(
                     alignment: Alignment.topCenter,
-                    child: Image.asset(model.map),
+                    child: Container(child: Image.asset(model.map)),
                   ),
-                ),
-                Container(
-                  //temp animate car2
-                  child: AnimatedAlign(
+                  AnimatedAlign(
+                      //TODO remove test widget
                       curve: Curves.fastOutSlowIn,
                       duration: Duration(milliseconds: 500),
-                      alignment: model.location['2'],
+                      alignment: Alignment(0.79340, 0.31993),
                       child: Icon(
                         Icons.local_taxi,
                         size: 26,
                       )),
-                ),
-                for (var item in model.gopigolist)
-                  //check not loading element
-                  if (item.id != -5) mapIconPlacer(context, model, item),
-              ],
+                  for (var item in model.gopigolist)
+                    //check not loading element
+                    if (item.id != -5) mapIconPlacer(context, model, item),
+                ],
+              ),
             ),
           );
         },
