@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/picture_service.dart';
