@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-
+//TODO this is deprecated, delete?
 class MeasurementLimits {
   int batteryLimit;
   double upperTemperatureLimit;

@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'dart:convert';
-
 class Measurements {
   double _upperLimit;
   double _lowerLimit;

@@ -8,8 +8,6 @@ class DriftersViewModel extends BaseViewModel {
   var _serverSyncService = locator<ServerSyncService>();
   List _gopigolist = [];
   List _gopigoidlist = [2, 3, 16]; //TODO get this from service
-  // @override
-  //Future<List<GoPiGo>> futureToRun() => _gopigoService.getGoPiGoInfo();
   String _title = "GoPigo Patrollers";
   List get gopigolist => _gopigolist;
   String get title => _title;
@@ -19,7 +17,6 @@ class DriftersViewModel extends BaseViewModel {
     print('DriftersViewModel Start update listener');
     _serverSyncService.goPiGoListMapStream.listen((event) {
       _gopigolist = event.values.toList();
-      // _removeLoadingIndicator();
       if (_gopigolist.length < _gopigoidlist.length)
         _showLoadingIndicator();
       else

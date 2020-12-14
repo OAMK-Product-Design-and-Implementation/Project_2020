@@ -88,8 +88,6 @@ class HistorySectionViewModel extends BatterystationViewModel {
   String get historySectionTitle => _historySectionTitle;
 
   Future handleHistoryItemCreated(int index) async {
-    // if (_items.length < itemRequestThreshold)
-    //   itemRequestThreshold = _items.length;
     var itemPosition = index + 1;
     var requestMoreData =
         itemPosition % itemRequestThreshold == 0 && itemPosition != 0;
