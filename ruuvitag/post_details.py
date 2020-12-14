@@ -14,7 +14,8 @@ ruuviId = ['11','12',"13","14","15"]
 
 macsLenght = len(macs)
 
-postUrl = 'http://195.148.21.106/api/ruuvi/post/details'
+postUrl_details = 'http://195.148.21.106/api/ruuvi/post/details'
+postUrl_battery = 'http://195.148.21.106/api/devices/post/battery'
 
 print('Starting')
 
@@ -31,22 +32,38 @@ while True:
         temperature = data['temperature']
         humidity = data['humidity']
         pressure = data['pressure']
+        batteryData = data['battery']
 
-        j_file = {
+        #Convert mV to percent by referring to 3.3V
+        batteryPer = batteryData / 3300 * 100
+
+        j_file_details = {
             "Devices_idDevice": idDevice,
             "Temperature": temperature,
             "Humidity": humidity,
             "AirPressure": pressure}
 
+        j_file_battery = {
+            "BatteryStatus": batteryPer,
+            "Devices_idDevice": idDevice}
+
         print("macAddr", mac)
 
-        x = requests.post(postUrl, json = j_file)
+        detailsReq = requests.post(postUrl_details, json = j_file_details)
+        batteryReq = requests.post(postUrl_battery, json = j_file_battery)
 
-        if x.status_code == 200:
+        if detailsReq.status_code == 200:
             print("Code 200, success!")
         else:
-            print("Error", x)
-            print("The post was unsuccessful.\n")
+            print("Error", detailsReq)
+            print("The details post was unsuccessful.\n")
+            time.sleep(1)
+        
+        if batteryReq.status_code == 200:
+            print("Code 200, success!")
+        else:
+            print("Error", batteryReq)
+            print("The battery post was unsuccessful.\n")
             time.sleep(1)
     else:
         print("Sleep", time_to_sleep, "sec")
