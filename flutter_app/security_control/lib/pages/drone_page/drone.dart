@@ -61,55 +61,60 @@ class DronePage extends StatelessWidget {
                 ),
               ),
               _mapSection(),
-              Card(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
+              ListView(
+                shrinkWrap: true,
                 children: [
-                  ListTile(
-                      title: Text(model.droneControlHeadline,
-                          style: Theme.of(context).textTheme.headline6)),
-                  Divider(
-                    height: 0,
-                  ),
-                  ButtonBar(
-                    mainAxisSize: MainAxisSize.max,
-                    layoutBehavior: ButtonBarLayoutBehavior.padded,
-                    alignment: MainAxisAlignment.center,
+                  Card(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      ElevatedButton(
-                        onPressed: model.sendGoHome,
-                        style: ButtonStyle(
-                            minimumSize:
-                                MaterialStateProperty.all(Size(150, 2))),
-                        child: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(model.goHomeLabel)),
+                      ListTile(
+                          title: Text(model.droneControlHeadline,
+                              style: Theme.of(context).textTheme.headline6)),
+                      Divider(
+                        height: 0,
                       ),
-                      ElevatedButton(
-                        onPressed: model.sendStartPatrol,
-                        style: ButtonStyle(
-                            minimumSize:
-                                MaterialStateProperty.all(Size(150, 2))),
-                        child: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(model.startPatrolLabel)),
+                      ButtonBar(
+                        mainAxisSize: MainAxisSize.max,
+                        layoutBehavior: ButtonBarLayoutBehavior.padded,
+                        alignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: model.sendGoHome,
+                            style: ButtonStyle(
+                                minimumSize:
+                                    MaterialStateProperty.all(Size(150, 2))),
+                            child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(model.goHomeLabel)),
+                          ),
+                          ElevatedButton(
+                            onPressed: model.sendStartPatrol,
+                            style: ButtonStyle(
+                                minimumSize:
+                                    MaterialStateProperty.all(Size(150, 2))),
+                            child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(model.startPatrolLabel)),
+                          ),
+                        ],
                       ),
+                      ButtonBar(
+                        alignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: model.sendEmergencyStop,
+                            style: ElevatedButton.styleFrom(
+                                primary: Theme.of(context).accentColor),
+                            child: Text(model.emergencyStopLabel),
+                          ),
+                        ],
+                      )
                     ],
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: model.sendEmergencyStop,
-                        style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).accentColor),
-                        child: Text(model.emergencyStopLabel),
-                      ),
-                    ],
-                  )
+                  )),
                 ],
-              )),
+              ),
             ])));
   }
 }

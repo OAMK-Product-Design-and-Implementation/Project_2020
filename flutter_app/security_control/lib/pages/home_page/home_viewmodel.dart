@@ -227,7 +227,7 @@ class HomeViewModel extends ChangeNotifier {
     );
   }
 
-  bool clearMessageDialog(BuildContext context, Message msg) {
+  clearMessageDialog(BuildContext context, Message msg) {
     Widget noButton = FlatButton(
       child: Text("NO"),
       onPressed: () {

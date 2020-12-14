@@ -19,34 +19,6 @@ class GalleryPage extends StatelessWidget {
         body: Container(
           child: Column(
             children: [
-              Card(
-                child: DropdownButton<Item>(
-                  isExpanded: true,
-                  hint: Text(model.dropDownButtonHint),
-                  iconSize: model.dropDownIconSize,
-                  value: model.selectedGallery,
-                  onChanged: (Item value) {
-                    model.setDropDownValue(value);
-                  },
-                  items: model.galleries.map((Item device) {
-                    return DropdownMenuItem<Item>(
-                      value: device,
-                      child: Row(
-                        children: <Widget>[
-                          device.icon,
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text(
-                            device.name,
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
               Expanded(
                 child: PhotosList(photos:
                   model.getPhotos()
