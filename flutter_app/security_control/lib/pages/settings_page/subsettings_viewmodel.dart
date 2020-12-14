@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:security_control/models/gopigo.dart';
-import 'package:security_control/router.gr.dart';
-import 'package:isolate_handler/isolate_handler.dart';
-import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
 import 'package:security_control/services/service_locator.dart';
 import 'package:security_control/services/local_storage_service.dart';
@@ -11,7 +7,6 @@ import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/sensor_sync_service.dart';
 
 class SubSettingsViewModel extends ChangeNotifier {
-  NavigationService _navigationService = locator<NavigationService>();
   LocalStorageService _localStorageService = locator<LocalStorageService>();
   MessagesSyncService _messagesSyncService = locator<MessagesSyncService>();
   SensorSyncService _sensorSyncService = locator<SensorSyncService>();
@@ -85,13 +80,6 @@ class SubSettingsViewModel extends ChangeNotifier {
   String get serverAddressLabel => _serverAddressLabel;
   String get serverAddress => _serverAddress;
 
-  //TODO: Demo, remove:
-  String _goPiGoId;
-  int _goPiGoBattery;
-  int _goPiGoLocation;
-  List _goPiGoIDList;
-  List _goPiGoList;
-
   ServerSyncService _serverSyncService = locator<ServerSyncService>();
   String _serverString;
   String get serverString => _serverString;
@@ -102,45 +90,7 @@ class SubSettingsViewModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    // // Monitor for changes in list of gopigo's:
-    // _localStorageService.goPiGoExampleIDString.listen{
-    //   _goPiGoIDList = _localStorageService.goPiGoExampleIDList;
-    //   // Call for function to rebuild listeners for each GoPiGo
-    // }
-    //
-    // // Get initial list of goPiGo's:
-    // _goPiGoIDList = _localStorageService.goPiGoExampleIDList;
-    //
-    // // Get goPiGo's by ID:
-    // for(var i=0; i< _goPiGoIDList.length; i++){
-    //
-    //   // Assemble list of GoPiGo's:
-    //   _goPiGoList[i] = (_localStorageService.getGoPiGoByID);
-    //
-    //   // Set listeners for changes in each GoPiGo:
-    //   _localStorageService.getStringByID(_goPiGoIDList(i)).listen{
-    //     _goPiGoList[i] = (_localStorageService.getGoPiGoByID(_goPiGoIDList(i)));
-    //   }
-    // }
-
     _serverString = "initialised";
-    // TODO: How do we unsubscribe when we dispose of viewmodel?
-    // This was worker around by not disposing viewmodel after leaving the page
-
-    // Now this is causing errors after viewmodel is disposed, since it is
-    //   still listening...
-    // _serverSyncService.receiveBroadcastStream.listen((message) {
-    //   _serverString = message;
-    //   notifyListeners();
-    // });
-
-    // _serverSyncService.goPiGoListMap.listen((gopigomap) {
-    //   if(gopigomap is Map){
-    //     for(GoPiGo drifter in gopigomap.values){
-    //       print(drifter.name);
-    //     }
-    //   }
-    // });
 
     _serverUpdateInterval =
         _localStorageService.serverUpdateInterval.getValue().toDouble();
@@ -177,6 +127,6 @@ class SubSettingsViewModel extends ChangeNotifier {
   startSync() {
     _serverSyncService.startSync();
     _messagesSyncService.startSync();
-    _sensorSyncService.startSync();
+    // _sensorSyncService.startSync();
   }
 }
