@@ -1,26 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:get_it/get_it.dart';
-import 'package:isolate_handler/isolate_handler.dart';
 import 'package:security_control/services/local_storage_service.dart';
 import 'package:security_control/services/service_locator.dart';
 import 'package:http/http.dart' as http;
 import 'package:security_control/models/ruuvitag.dart';
 
 class SensorSyncService {
-  var _isolate;
   ReceivePort _receivePort;
   Stream _receiveBroadcastStream;
   SendPort _sendPort;
-  //Stream get receiveBroadcastStream => _receiveBroadcastStream;
   SendPort get sendPort => _sendPort;
-  StreamSubscription _tempStreamSubscription;
   LocalStorageService _localStorageService;
 
   // Gopigo data:
@@ -38,10 +31,7 @@ class SensorSyncService {
     _receiveBroadcastStream = _receivePort.asBroadcastStream();
     _localStorageService = locator<LocalStorageService>();
 
-    // _goPiGoJSONMap[ID] = "JSON HERE";
-    // _goPiGoJSONMapControl.add(_goPiGoJSONMap);
-
-    _tempStreamSubscription = _receiveBroadcastStream.listen((message) {
+    _receiveBroadcastStream.listen((message) {
       // Register the sendPort when the other isolate tells us so:
       if (message is List) {
         switch (message[0]) {
@@ -67,7 +57,6 @@ class SensorSyncService {
             // Create a gopigo object of these and add it to the Map!
             // Thought: does this introduce memory leaks? Are the old objects
             //    ever deleted from memory?
-            // TODO: Maybe send all gopigos at once from isolate?
 
             if (jsonDecode(message[2]).length > 0) {
               _ruuviTagListMap[message[1]] = RuuviTag.fromJson(message[2],
@@ -125,11 +114,6 @@ class SensorSyncService {
   void startSync() {
     _sendPort.send("syncruuvitags");
   }
-
-  // void setUpdateInterval(double seconds){
-  //   _sendPort.send(["setinterval", seconds]);
-  // }
-
 }
 
 void entryPoint(SendPort sendPort) {
