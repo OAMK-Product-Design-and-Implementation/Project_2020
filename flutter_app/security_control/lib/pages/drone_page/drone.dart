@@ -123,9 +123,7 @@ Widget _mapSection() {
   return Card(
     clipBehavior: Clip.antiAlias,
     child: SizedBox(
-      //TODO make this dynamic size for bigger/smaller screens
       height: 300.0,
-      // width: 350.0,
       child: Stack(
         children: [
           new FlutterMap(

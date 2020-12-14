@@ -1,11 +1,7 @@
-import 'package:security_control/services/navigation_service.dart';
-import 'package:security_control/services/service_locator.dart';
-
-import 'drone.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-class DroneViewModel extends ChangeNotifier{
+class DroneViewModel extends ChangeNotifier {
   String _appBarTitle = "Drone";
   String _droneConnectionLabel = "Drone connection";
   bool _droneConnected = false;
@@ -18,7 +14,6 @@ class DroneViewModel extends ChangeNotifier{
   String _goHomeLabel = "GO HOME";
   String _startPatrolLabel = "START PATROL";
   String _emergencyStopLabel = "EMERGENCY LAND";
-
 
   String get appBarTitle => _appBarTitle;
   String get droneConnectionLabel => _droneConnectionLabel;
@@ -33,16 +28,9 @@ class DroneViewModel extends ChangeNotifier{
   String get startPatrolLabel => _startPatrolLabel;
   String get emergencyStopLabel => _emergencyStopLabel;
 
-  sendGoHome(){
+  sendGoHome() {}
 
-  }
+  sendStartPatrol() {}
 
-  sendStartPatrol(){
-
-  }
-
-  sendEmergencyStop(){
-
-  }
-
+  sendEmergencyStop() {}
 }
