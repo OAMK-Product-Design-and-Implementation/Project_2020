@@ -4,7 +4,6 @@ import 'package:flutter/painting.dart';
 import 'package:stacked/stacked.dart';
 import 'package:animations/animations.dart';
 import 'sensors_viewmodel.dart';
-//import 'package:security_control/models/ruuvitag.dart';
 
 class SensorsPage extends StatelessWidget {
   @override
@@ -72,12 +71,9 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
     closedElevation: 0.0,
     closedColor: Theme.of(context).cardColor,
     closedBuilder: (BuildContext _, VoidCallback openContainer) {
-      //if shown info amount changes, consider custom widget
-      // TODO update to ruuvitag visuals
       return Container(
         padding: EdgeInsets.all(8),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -94,7 +90,6 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                 Expanded(
                   child: Text(
                     device.status().toUpperCase(),
-                    //style: device.statusStyle(context),
                     style: device.status() != 'connected'
                         ? TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)
                         : TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
@@ -116,7 +111,7 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                     margin: EdgeInsets.only(left: 8),
                     height: 48,
                     child: Icon(CupertinoIcons.tornado)),
-                Text(device.pressure.current.toString() + ' Pa'),
+                Text(device.pressure.current.toString() + ' hPa'),
                 Container(
                     margin: EdgeInsets.only(left: 8),
                     height: 48,
@@ -134,7 +129,7 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
       return ViewModelBuilder<RuuviTagSettingsViewModel>.reactive(
         initialiseSpecialViewModelsOnce: true,
         builder: (context, model, child) {
-          if (device.id != model.id) model.setdevice(device); //TODO
+          if (device.id != model.id) model.setdevice(device);
           print(
               'RuuviTagSettingsViewModel for [${device.name}]/[${model.name}] built');
           return Scaffold(
@@ -171,7 +166,6 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                           ),
                           initialValue: model.name,
                           onChanged: (String value) {
-                            //TODO make text sanitizer
                             model.nameTextUpdate(value);
                           },
                         ),
@@ -194,7 +188,7 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                       ),
                       Divider(),
                       ListTile(
-                        title: Text('Airpressure limit (Pa)'),
+                        title: Text('Airpressure limit (hPa)'),
                         subtitle: model.pressureRangeSlider(context, device),
                       ),
                       Divider(),
