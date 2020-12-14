@@ -8,16 +8,7 @@ import databaseConnect as db
 from datetime import date, datetime
 import re, json
 
-#import base64
-#from base64 import b64encode
-#import os, os.path
-
 import imageFileHandler as ifh
-
-#import io
-#import pillow
-
-img_save_path = "/home/ubuntu/images/"
 
 app = flask.Flask(__name__)
 #app.config["DEBUG"] = True
@@ -41,9 +32,7 @@ def home():
 # Post an image by idDevice (image base64 included to db)
 @app.route('/api/devices/post/image64', methods=['POST'])
 def postDevicesImage64():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Images (Devices_idDevice, Names, images) 
                 VALUES ("{}", "{}", "{}")'''.format(
                     content['Devices_idDevice'],
@@ -55,9 +44,7 @@ def postDevicesImage64():
 # Post an image by idDevice (base64 decoded and saved to a directory)
 @app.route('/api/devices/post/image', methods=['POST'])
 def postDevicesImage():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     devID = content["Devices_idDevice"] 
     fileName = content["Names"]
     fileData = content["images"]
@@ -70,9 +57,7 @@ def postDevicesImage():
 
 @app.route('/api/imagesbytime/get/<timest>', methods=['GET']) 
 def getImageByTime(timest):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Devices.DeviceName, Images.Names, Devices_idDevice, date_format(Images.Timestamp, '%Y-%m-%d %T') FROM Devices LEFT JOIN Images 
                 ON Devices.idDevice = Images.Devices_idDevice WHERE Images.Timestamp > "{}"'''.format(timest)
     
@@ -92,9 +77,7 @@ def getImageByTime(timest):
 
 @app.route('/api/images/get/<deviceid>', methods=['GET'])
 def getImage(deviceid):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Names FROM Images WHERE Devices_idDevice = "{}" ORDER BY Timestamp DESC LIMIT 1'''.format(deviceid)
     fileName = db.sqlQuery(query)
     img_rawdata = ifh.getImage(fileName)       
@@ -103,9 +86,7 @@ def getImage(deviceid):
 # Get image table
 @app.route('/api/images/get/table', methods=['GET'])
 def getImageTable():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT Names, Timestamp, Devices_idDevice FROM Images ORDER BY Timestamp DESC"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -117,9 +98,7 @@ def getImageTable():
 # Post a message by idDevice
 @app.route('/api/devices/post/message', methods=['POST'])
 def postDevicesMessage():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Message (Messagetype, Explanation, Devices_idDevice) 
                 VALUES ("{}", "{}", "{}")'''.format(
                     content['Messagetype'],
@@ -131,9 +110,7 @@ def postDevicesMessage():
 # Get messages
 @app.route('/api/messages/get/messages', methods=['GET'])
 def getMessages():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Message"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -141,9 +118,7 @@ def getMessages():
 # Post a new device
 @app.route('/api/devices/post/newdevice', methods=['POST'])
 def postNewDevice():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Devices (DeviceName, 
                 DeviceType) 
                 values ('{}','{}')'''.format(
@@ -156,9 +131,7 @@ def postNewDevice():
 # GET Devices
 @app.route('/api/devices/get/devices', methods=['GET'])
 def getDevices():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Devices"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -166,9 +139,7 @@ def getDevices():
 # GET latest locations
 @app.route('/api/devices/get/locations', methods=['GET'])
 def getLocations():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Location ORDER BY Timestamp DESC"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -176,9 +147,7 @@ def getLocations():
 # Example GET
 @app.route('/api/devices/get/devicelocationsstatus', methods=['GET'])
 def getDeviceLocationStatus():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM DeviceLocationsStatus"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -186,9 +155,7 @@ def getDeviceLocationStatus():
 # Example GET
 @app.route('/api/devices/get/latestcaratchargestation', methods=['GET'])
 def getDeviceLatestCarAtChargeStation():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM LatestCarAtChargeStation"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -201,9 +168,7 @@ def getDeviceLatestCarAtChargeStation():
 # Get messages where active is set to 1 (which is a default value upon creating a new Message)
 @app.route('/api/devices/get/activemessages', methods=['GET'])  
 def getActiveMessages():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Message.idMessage, Message.Messagetype, Message.Explanation, date_format(Message.Timestamp, '%Y-%m-%d %T'), Devices.Devicename
     FROM Devices INNER JOIN Message ON Devices.idDevice = Message.Devices_idDevice WHERE Message.Active = "1"'''
     data = db.sqlQuery(query)
@@ -212,9 +177,7 @@ def getActiveMessages():
 # Post update to set message to 0 (inactive) by message id
 @app.route('/api/message/post/messageinactive', methods=['POST'])
 def postInactive():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''UPDATE Message SET Active = "0" 
                WHERE idMessage = {}'''.format(content['idMessage']) 
     db.sqlInsert(query)
@@ -224,19 +187,15 @@ def postInactive():
 # Get all ruuvitag id's
 @app.route('/api/devices/get/ruuvitagid', methods=['GET'])
 def getRuuvitagID():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT DISTINCT idDevice FROM Devices WHERE DeviceType = "ruuvitag"'''
     data = db.sqlQuery(query)
     return jsonify(data)
 
 # Get latest details of ruuvitag by id
 @app.route('/api/doordetail/get/<deviceid>', methods=['GET'])
-def getRuuvitagLatest(deviceid):                                  
-    print (request.is_json)                                          
+def getRuuvitagLatest(deviceid):                                                                  
     content = request.get_json()
-    print(content)
     query = '''SELECT Battery.BatteryStatus, Devices.DeviceName, Location.Segment, Door_status.OpenOrNot, 
     Measurements.Temperature, Measurements.Humidity, Measurements.AirPressure, Devices.Connected
     FROM Door LEFT JOIN Devices ON Door.Devices_idDevice = Devices.idDevice 
@@ -252,9 +211,7 @@ def getRuuvitagLatest(deviceid):
 # Get limits of ruuvitag by id
 @app.route('/api/ruuvilimit/get/<deviceid>', methods=['GET']) 
 def getRuuvitagLimits(deviceid):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Measurements_Limits.Temperature_max, Measurements_Limits.Temperature_min, Measurements_Limits.Humidity_max, Measurements_Limits.Humidity_min, 
             Measurements_Limits.AirPressure_max, Measurements_Limits.AirPressure_min, Measurements_Limits.Batterylimit FROM Devices
             LEFT JOIN Measurements_Limits ON Measurements_Limits.Devices_idDevice = Devices.idDevice WHERE Devices.idDevice = "{}"'''.format(deviceid)
@@ -264,9 +221,7 @@ def getRuuvitagLimits(deviceid):
 # Post ruuvitag measure limits
 @app.route('/api/ruuvilimit/post/ruuvilimits', methods=['POST'])
 def postRuuvitagLimits():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''UPDATE Measurements_Limits SET Temperature_max = "{}", Temperature_min = "{}", Humidity_max = "{}", Humidity_min = "{}", 
                 AirPressure_max = "{}", AirPressure_min = "{}", Batterylimit = "{}" WHERE Devices_idDevice = "{}"'''.format(
                     content['Temperature_max'],
@@ -284,9 +239,7 @@ def postRuuvitagLimits():
 # Get Gopigo IDs
 @app.route('/api/devices/get/gopigoids', methods=['GET'])
 def getCarIDs():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT DISTINCT idDevice FROM Devices WHERE DeviceType = "gopigo"'''
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -294,9 +247,7 @@ def getCarIDs():
 # Get latest details of gopigo by ID
 @app.route('/api/gopigoid/get/<deviceid>', methods=['GET'])
 def getGopigoDetails(deviceid):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Devices.DeviceName, Battery.BatteryStatus, Location.Segment, Devices.Connected FROM Devices 
                 LEFT JOIN Battery ON Devices.idDevice = Battery.Devices_idDevice LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice
                 WHERE idDevice = "{}" ORDER BY GREATEST(Battery.Timestamp, Location.Timestamp) LIMIT 1'''.format(deviceid)
@@ -306,9 +257,7 @@ def getGopigoDetails(deviceid):
 # Post a new name for a device by id
 @app.route('/api/devices/post/newdevicename', methods=['POST'])
 def postNewDeviceName():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''UPDATE Devices SET DeviceName = "{}" 
                WHERE idDevice = "{}"'''.format(content['DeviceName'],
                     content['idDevice']) 
@@ -319,9 +268,7 @@ def postNewDeviceName():
 # Get current status
 @app.route('/api/devices/get/stationstatus', methods=['GET'])
 def getStationStatus():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Charger_Status.Status, Devices.DeviceName FROM Devices LEFT JOIN Charger_Status 
                 ON Devices.idDevice = Charger_Status.Devices_idDevice ORDER BY Timestamp DESC LIMIT 1'''
     data = db.sqlQuery(query)
@@ -330,9 +277,7 @@ def getStationStatus():
 # Get history of 10 older than timestamp
 @app.route('/api/charge/get/<timest>', methods=['GET'])
 def getStationHistory(timest):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Devices.DeviceName, date_format(Charger_Status.Timestamp, '%Y-%m-%d %T')
                 FROM Devices INNER JOIN Charger_Status ON Devices.idDevice = Charger_Status.Devices_idDevice 
                 WHERE Charger_Status.Timestamp < "{}" ORDER BY Charger_Status.Timestamp DESC LIMIT 10'''.format(timest)
@@ -345,9 +290,7 @@ def getStationHistory(timest):
 # Get doors
 @app.route('/api/ruuvi/get/doors', methods=['GET'])
 def getDoors():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Door"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -355,9 +298,7 @@ def getDoors():
 # Get door status
 @app.route('/api/ruuvi/get/doorstatus', methods=['GET'])
 def getDoorsStatus():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Door_status ORDER BY Timestamp DESC"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -365,9 +306,7 @@ def getDoorsStatus():
 # Get measurements
 @app.route('/api/ruuvi/get/measurements', methods=['GET'])
 def getDoorMeasurements():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = "SELECT * FROM Measurements ORDER BY Timestamp DESC"
     data = db.sqlQuery(query)
     return jsonify(data)
@@ -375,9 +314,7 @@ def getDoorMeasurements():
 # Assign a door for Ruuvitag
 @app.route('/api/ruuvi/post/newdoor', methods=['POST'])
 def postNewDoor():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Door (DoorName, 
                 Devices_idDevice) 
                 values ('{}','{}')'''.format(
@@ -390,9 +327,7 @@ def postNewDoor():
 # Update a door for Ruuvitag
 @app.route('/api/ruuvi/post/updatedoor', methods=['POST'])
 def postUpdateDoor():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''UPDATE Door SET Devices_idDevice = "{}" WHERE DoorName = "{}"'''.format(
                     content['Devices_idDevice'], 
                     content['DoorName'])
@@ -403,9 +338,7 @@ def postUpdateDoor():
 # Post message 
 @app.route('/api/ruuvi/post/message', methods=['POST'])
 def postRuuvitagMessage():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Message (Messagetype, Explanation, Devices_idDevice) 
                 VALUES ("{}", "{}", "{}")'''.format(
                     content['Messagetype'],
@@ -417,9 +350,7 @@ def postRuuvitagMessage():
 # Post door status
 @app.route('/api/ruuvi/post/doorstatus', methods=['POST'])
 def postRuuvitagDoor():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Door_status (OpenOrNot, Door_idDoor) 
                 VALUES ("{}", "{}")'''.format(
                     content['OpenOrNot'],
@@ -430,9 +361,7 @@ def postRuuvitagDoor():
 # Post ruuvitag measurements
 @app.route('/api/ruuvi/post/details', methods=['POST'])
 def postRuuvitagDetails():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Measurements (Devices_idDevice, Temperature, Humidity, AirPressure) 
                 VALUES ("{}", "{}", "{}", "{}")'''.format(
                     content['Devices_idDevice'],
@@ -450,9 +379,7 @@ def postRuuvitagDetails():
 # Post a drone status & measurements by idDevice
 @app.route('/api/drone/post/details', methods=['POST'])
 def postDroneDetails():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Drone_Status (Status, Speed, FlyHeight, Acceleration, Devices_idDevice) 
                 VALUES ("{}", "{}", "{}", "{}", "{}")'''.format(
                     content['Status'],
@@ -466,9 +393,7 @@ def postDroneDetails():
 # Get drone info
 @app.route('/api/drone/get/details', methods=['GET'])
 def getDroneDetails():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''SELECT Devices.DeviceName, Drone_Status.Status, Drone_Status.Speed, Drone_Status.FlyHeight, Drone_Status.Acceleration, date_format(Drone_Status.Timestamp, '%Y-%m-%d %T') 
                 FROM Devices LEFT JOIN Drone_Status ON Devices.idDevice = Drone_Status.Devices_idDevice WHERE DeviceType = "drone" 
                 ORDER BY Drone_Status.Timestamp DESC'''
@@ -484,9 +409,7 @@ def getDroneDetails():
 # Gopigo (and Ruuvitag?) location POST
 @app.route('/api/devices/post/location', methods=['POST'])
 def postLocation():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Location (Segment, 
                 Devices_idDevice) 
                 values ('{}','{}')'''.format(
@@ -499,9 +422,7 @@ def postLocation():
 # Gopigo charger status POST
 @app.route('/api/devices/post/status', methods=['POST'])
 def postStatus():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Charger_Status (Status, 
                 Devices_idDevice) 
                 values ('{}','{}')'''.format(
@@ -514,9 +435,7 @@ def postStatus():
 # Gopigo battery POST
 @app.route('/api/devices/post/battery', methods=['POST'])
 def postBattery():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''INSERT INTO Battery (BatteryStatus, 
                 Devices_idDevice) 
                 values ('{}','{}')'''.format(
@@ -529,9 +448,7 @@ def postBattery():
 #Post battery limits
 @app.route('/api/devices/post/batterylimits', methods=['POST'])
 def postGopigoBatteryLimits():
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''UPDATE Measurements_Limits SET Batterylimit = "{}" WHERE Devices_idDevice = "{}"'''.format(
                     content['Batterylimit'],
                     content['Devices_idDevice']) 
@@ -540,9 +457,7 @@ def postGopigoBatteryLimits():
 
 @app.route('/api/devices/post/batterylimits/<deviceID>', methods=['GET'])
 def getGopigoBatteryLimits(deviceID):
-    print (request.is_json)
     content = request.get_json()
-    print(content)
     query = '''Select Batterylimit from Measurements_Limits WHERE Devices_idDevice = "{}"'''.format(deviceID)
     data = db.sqlQuery(query)
     return jsonify(data)
