@@ -1,6 +1,4 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 Widget menuListTile(String title, BuildContext context, Function action,
     [String subtitle]) {
@@ -40,15 +38,9 @@ Widget menuSwitchListTile(
 }
 
 // Action function must take double as parameter: action(value)
-Widget menuSliderListItem(
-  String title,
-  BuildContext context,
-  Function action,
-  double valueToFollow,
-  double maxValue,
-  double minValue,
-    [Function actionOnRelease]
-) {
+Widget menuSliderListItem(String title, BuildContext context, Function action,
+    double valueToFollow, double maxValue, double minValue,
+    [Function actionOnRelease]) {
   return new Padding(
       padding: EdgeInsets.all(16),
       child: Column(mainAxisSize: MainAxisSize.max, children: [
@@ -72,16 +64,17 @@ Widget menuSliderListItem(
                   Text(valueToFollow.round().toString() + 's'),
                   Expanded(
                     child: Slider(
-                        value: valueToFollow,
-                        max: maxValue,
-                        min: minValue,
-                        label: valueToFollow.round().toString(),
-                        onChanged: (double value) {
-                          action(value);
-                        },
-                        onChangeEnd: actionOnRelease == null ? null : actionOnRelease,  // if action defined, call it
+                      value: valueToFollow,
+                      max: maxValue,
+                      min: minValue,
+                      label: valueToFollow.round().toString(),
+                      onChanged: (double value) {
+                        action(value);
+                      },
+                      onChangeEnd: actionOnRelease == null
+                          ? null
+                          : actionOnRelease, // if action defined, call it
                     ),
-
                   ),
                 ]))
       ]));
@@ -106,9 +99,17 @@ Widget requestTextAlertDialog(
       ),
     ),
     actions: [
-      FlatButton(onPressed: (){confirmAction();Navigator.of(context).pop();}, child: Text(confirmButtonLabel)),
-      FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text(cancelButtonLabel))
+      FlatButton(
+          onPressed: () {
+            confirmAction();
+            Navigator.of(context).pop();
+          },
+          child: Text(confirmButtonLabel)),
+      FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(cancelButtonLabel))
     ],
   );
 }
-
