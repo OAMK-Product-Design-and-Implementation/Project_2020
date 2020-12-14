@@ -1,6 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:security_control/models/message.dart';
 import 'package:security_control/router.gr.dart';
 import 'package:security_control/services/navigation_service.dart';
+import 'package:security_control/services/sensor_sync_service.dart';
 import 'package:security_control/services/service_locator.dart';
 
 import 'package:flutter/material.dart';
@@ -9,10 +11,12 @@ import 'package:flutter/foundation.dart';
 import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
 
+
 class HomeViewModel extends ChangeNotifier {
   NavigationService _navigationService = locator<NavigationService>();
   MessagesSyncService _messagesSyncService = locator<MessagesSyncService>();
   ServerSyncService _serverSyncService = locator<ServerSyncService>();
+  SensorSyncService _sensorSyncService = locator<SensorSyncService>();
 
   String _appBarTitle = "Security Control";
   String _accountName = "Test User";
@@ -81,10 +85,11 @@ class HomeViewModel extends ChangeNotifier {
     const MyDrawerItems('Drone', Icon(Icons.airplanemode_active_rounded)),
     const MyDrawerItems('Sensors', Icon(Icons.ac_unit)),
     const MyDrawerItems('Pictures', Icon(Icons.photo)),
-    const MyDrawerItems('Settings', Icon(Icons.settings)),
-    const MyDrawerItems('Logout', Icon(Icons.logout)),
     const MyDrawerItems(
         'Charge Station', Icon(Icons.airline_seat_legroom_extra)),
+    const MyDrawerItems('Settings', Icon(Icons.settings)),
+    const MyDrawerItems('Logout', Icon(Icons.logout)),
+
   ];
 
   void drawerItemOnPressed(int i) {
@@ -102,35 +107,25 @@ class HomeViewModel extends ChangeNotifier {
         _navigationService.navigateTo(Routes.picturesPage);
         break;
       case 4:
-        _navigationService.navigateTo(Routes.settingsPage);
+        _navigationService.navigateTo(Routes.batteryStationPage);
         break;
       case 5:
-        _navigationService.navigateTo(Routes.loginPage);
+        _navigationService.navigateTo(Routes.settingsPage);
         break;
       case 6:
-        _navigationService.navigateTo(Routes.batteryStationPage);
+        stopSync();
+        _navigationService.navigateTo(Routes.loginPage);
         break;
     }
   }
 
   List actionsRequired;
 
-  List<Devices> devicesList = <Devices>[
-    Devices(1, 'test car1', 24, true),
-    Devices(2, 'BoB', 46, true),
-    Devices(3, 'gopigo5', 100, false),
-    Devices(4, 'Drone', 80, true),
-    Devices(5, 'RuuviTag1', 25, false),
-    Devices(6, 'RuuviTag2', 97, false),
-    Devices(7, 'RuuviTag3', 64, false),
-    Devices(8, 'Ruuvi4', 13, true),
-    Devices(9, 'Auto7', 49, true),
-  ];
-
   initialise() {
+
     _messagesSyncService.messageListStream.listen((event) {
       actionsRequired = event;
-      //_intruderAlert = false;
+      _intruderAlert = false;
       _criticalActionsCount = 0;
       for(Message action in actionsRequired){
         if(action.messageType == "Intruder"){
@@ -150,8 +145,21 @@ class HomeViewModel extends ChangeNotifier {
     });
     _goPiGoList = _serverSyncService.goPiGoListMap.values.toList();
     actionsRequired = _messagesSyncService.messageList;
-  }
 
+    _sensorSyncService.ruuviTagListMapStream.listen((event) {
+      _sensorList = event.values.toList();
+      notifyListeners();
+    });
+
+    _sensorList = _sensorSyncService.ruuviTagListMap.values.toList();
+
+
+  }
+  stopSync() {
+    _serverSyncService.stopSync();
+    _messagesSyncService.stopSync();
+    _sensorSyncService.stopSync();
+  }
   showRequiredActionsDialog(BuildContext context) {
     Widget clearButton = FlatButton(
       child: Text("CLEAR ALL"),

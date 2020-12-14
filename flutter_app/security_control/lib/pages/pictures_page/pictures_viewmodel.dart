@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:security_control/router.gr.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/service_locator.dart';
@@ -26,6 +28,7 @@ class PicturesViewModel extends ChangeNotifier {
     _navigationService.navigateTo(Routes.galleryPage);
   }
 
-  Future<List<Photo>> getLatestPhoto() =>
+  Future<List<List>> getLatestPhoto() =>
       locator<PictureService>().fetchPhotos(http.Client());
+
 }

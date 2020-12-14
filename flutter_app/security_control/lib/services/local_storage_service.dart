@@ -44,7 +44,7 @@ class LocalStorageService {
     return _instance;
   }
 
-  Preference<int> get serverUpdateInterval => _getFromDisk(ServerUpdateIntervalKey, 5);
+  Preference<int> get serverUpdateInterval => _getFromDisk(ServerUpdateIntervalKey, 2);
   //set serverUpdateInterval(int value) => _saveToDisk(ServerUpdateIntervalKey, value);
   Preference<String> get serverAddress => _getFromDisk(ServerAddressKey, "195.148.21.106");
 

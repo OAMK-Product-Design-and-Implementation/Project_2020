@@ -190,7 +190,56 @@ class HomePage extends StatelessWidget {
                       },
                     ),
 
-                        Icon(Icons.directions_transit),
+                        ListView.builder(
+                          itemCount: model.sensorList.length,
+                          itemBuilder: (context, i) {
+                            return Card(
+                              child: ListTile(
+                                leading: Container(
+                                  //icon sizes adjusted to match material design
+                                  width: 58,
+                                  height: 48,
+                                  // width: MediaQuery.of(context).size.width * 0.15,
+                                  // height: MediaQuery.of(context).size.height * 0.70,
+                                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.battery_std,
+                                      ),
+                                      Text(
+                                        model.sensorList[i].batterylevel.current.round()
+                                            .toString() +
+                                            '%',
+                                        style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                title: Text(
+                                  model.sensorList[i].name,
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                trailing: model.sensorList[i].connected == true
+                                    ? Text(
+                                  model.deviceConnected,
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold),
+                                )
+                                    : Text(
+                                  model.deviceDisconnected,
+                                  style: TextStyle(
+                                      color: Theme.of(context).accentColor,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                //onTap: () {}, //on tap goto device page/ device settings?
+                              ),
+                            );
+                          },
+                        ),
                   ])),
                 ]),
               )

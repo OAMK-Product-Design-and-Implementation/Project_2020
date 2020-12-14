@@ -69,7 +69,9 @@ class DronePage extends StatelessWidget {
                   ListTile(
                       title: Text(model.droneControlHeadline,
                           style: Theme.of(context).textTheme.headline6)),
-                  Divider(),
+                  Divider(
+                    height: 0,
+                  ),
                   ButtonBar(
                     mainAxisSize: MainAxisSize.max,
                     layoutBehavior: ButtonBarLayoutBehavior.padded,
@@ -112,7 +114,6 @@ class DronePage extends StatelessWidget {
   }
 }
 
-
 Widget _mapSection() {
   return Card(
     clipBehavior: Clip.antiAlias,
@@ -130,7 +131,7 @@ Widget _mapSection() {
             layers: [
               new TileLayerOptions(
                   urlTemplate:
-                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                   subdomains: ['a', 'b', 'c']),
               new MarkerLayerOptions(
                 markers: [
@@ -139,7 +140,11 @@ Widget _mapSection() {
                     height: 26.0,
                     point: LatLng(65.058998, 25.462000),
                     builder: (ctx) => new Container(
-                      child: Icon(Icons.api, color: Colors.red,size: 36,),
+                      child: Icon(
+                        Icons.api,
+                        color: Colors.red,
+                        size: 36,
+                      ),
                     ),
                   )
                 ],
@@ -149,41 +154,23 @@ Widget _mapSection() {
               TileLayerWidget(
                   options: TileLayerOptions(
                       urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                       subdomains: ['a', 'b', 'c'])),
               MarkerLayerWidget(
                   options: MarkerLayerOptions(
-                    markers: [
-                      Marker(
-                        width: 26.0,
-                        height: 26.0,
-                        point: LatLng(65.058998, 25.461282),
-                        builder: (ctx) => Container(
-                          child: FlutterLogo(),
-                        ),
-                      ),
-                    ],
-                  )),
+                markers: [
+                  Marker(
+                    width: 26.0,
+                    height: 26.0,
+                    point: LatLng(65.058998, 25.461282),
+                    builder: (ctx) => Container(
+                      child: FlutterLogo(),
+                    ),
+                  ),
+                ],
+              )),
             ],
           ),
-          // Align(
-          //   alignment: Alignment.topCenter,
-          //   child: Column(
-          //     children: [
-          //       SizedBox(
-          //         height: 32.0,
-          //         child: Card(
-          //           //color: Theme.of(context).backgroundColor,
-          //           child: Container(
-          //             //padding: const EdgeInsets.all(8),
-          //             child: Text('Map Section goes Here',)
-          //                 // style: Theme.of(context).textTheme.headline6),
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     ),

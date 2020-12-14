@@ -27,20 +27,26 @@ GetIt locator = GetIt.instance;
 
 Future setupLocator() async {
   locator.registerLazySingleton(() => NavigationService());
-  locator.registerLazySingleton(() => PictureService());
   locator.registerLazySingleton(() => GoPiGoService());
 
+
+  //history
+  var historySyncInstance = HistorySyncService();
+  locator.registerSingleton<HistorySyncService>(historySyncInstance);
+}
+
+Future setupUrgentServices() async{
   var instance = await LocalStorageService.getInstance();
   locator.registerSingleton<LocalStorageService>(instance);
   //locator.registerLazySingleton(() => LocalStorageService());
   var syncInstance = ServerSyncService();
   locator.registerSingleton<ServerSyncService>(syncInstance);
 
+  var pictureInstance = await PictureService.getInstance();
+  locator.registerSingleton<PictureService>(pictureInstance);
+
   var messagesSyncInstance = MessagesSyncService();
   locator.registerSingleton<MessagesSyncService>(messagesSyncInstance);
   var sensorSyncInstance = SensorSyncService();
   locator.registerSingleton<SensorSyncService>(sensorSyncInstance);
-  //history
-  var historySyncInstance = HistorySyncService();
-  locator.registerSingleton<HistorySyncService>(historySyncInstance);
 }

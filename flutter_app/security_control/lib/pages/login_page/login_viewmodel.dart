@@ -1,6 +1,9 @@
 import 'package:security_control/router.gr.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/service_locator.dart';
+import 'package:security_control/services/server_sync_service.dart';
+import 'package:security_control/services/messages_sync_service.dart';
+import 'package:security_control/services/sensor_sync_service.dart';
 
 import 'login.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +12,9 @@ import 'package:flutter/foundation.dart';
 class LoginViewModel extends ChangeNotifier{
 
   NavigationService _navigationService = locator<NavigationService>();
+  ServerSyncService _serverSyncService = locator<ServerSyncService>();
+  MessagesSyncService _messagesSyncService = locator<MessagesSyncService>();
+  SensorSyncService _sensorSyncService = locator<SensorSyncService>();
 
   bool _loginSuccess = false;
   bool _errorVisible = false;
@@ -49,12 +55,20 @@ class LoginViewModel extends ChangeNotifier{
     if(username == ""){
       _loginSuccess = true;
       _navigationService.navigateToAndReplace(Routes.homePage);
+      startSync();
+
     }
     else{
       _loginSuccess = false;
       _setErrorVisibility(true);
     }
 
+  }
+
+  startSync() {
+    _serverSyncService.startSync();
+    _messagesSyncService.startSync();
+    _sensorSyncService.startSync();
   }
 
 

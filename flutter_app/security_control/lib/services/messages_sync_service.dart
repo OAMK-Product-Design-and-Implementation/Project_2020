@@ -7,6 +7,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isolate_handler/isolate_handler.dart';
@@ -41,6 +42,7 @@ class MessagesSyncService{
     _receivePort = ReceivePort();
     _receiveBroadcastStream = _receivePort.asBroadcastStream();
     _localStorageService = locator<LocalStorageService>();
+    const _platform = const MethodChannel('samples.flutter.dev/pushintruderalert');
 
 
     _tempStreamSubscription = _receiveBroadcastStream.listen((message) {
@@ -69,6 +71,16 @@ class MessagesSyncService{
             for(var msg in _tempList){
               _tempMessagesList.add(Message(msg[0], msg[4], msg[1], msg[3] , msg[2], clearMessage));
               print("(TRACE): MESSAGE from MessagesSyncService: " + msg.toString());
+              if(msg[1] == "Intruder"){
+                try{
+                  _platform.invokeMethod(
+                      "pushIntruderAlert", <String>["INTRUDER ALERT", msg[2]]);
+                }
+                catch(err){
+                  print("(TRACE): MessagesSyncService: Error pushing platform"
+                      "notification:" + err.toString());
+                }
+              }
             }
             _messageList = _tempMessagesList;
             _messageListController.add(_messageList);

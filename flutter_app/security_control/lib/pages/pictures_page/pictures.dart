@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'pictures_viewmodel.dart';
@@ -13,7 +15,18 @@ class PicturesPage extends StatelessWidget {
       viewModelBuilder: () => PicturesViewModel(),
       //onModelReady: (model) => model.loadData(),
       builder: (context, model, child) => Scaffold(
-        appBar: AppBar(title: Text(model.appBarTitle)),
+        appBar: AppBar(
+          title: Text(model.appBarTitle),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.photo),
+              onPressed: () {
+                model.galleryButtonOnPressed();
+              },
+              tooltip: "Gallery",
+            )
+          ],
+        ),
         body: ListView(
           children: [
             Card(
@@ -23,61 +36,21 @@ class PicturesPage extends StatelessWidget {
                   ListTile(
                     title: Text(
                       model.pictureTitle,
-                      style: Theme.of(context).textTheme.headline4,
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                   ),
-/*                   Padding(
-                    padding: EdgeInsets.only(right: 8.0, left: 8.0),
-                    //child: Image.asset(model.testImg), 
-                    child: Image.network(photos[1].url),
-                  ), */
-
-                  FutureBuilder<List<Photo>>(
+                  FutureBuilder<List<List>>(
                     future: model.getLatestPhoto(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
 
                       return snapshot.hasData
                           ? LatestPicture(photos: snapshot.data)
-                          : Center(child: CircularProgressIndicator());
+                          : Center(
+                              child: Padding(
+                                  padding: EdgeInsets.only(bottom: 16.0),
+                                  child: CircularProgressIndicator()));
                     },
-                  ),
-
-/*                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      model.deviceName + ', ' + model.dateAndTime,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                  ), */
-                ],
-              ),
-            ),
-            Card(
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      model.galleryTitle,
-                      style: Theme.of(context).textTheme.headline4,
-                    ),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          model.galleryButtonOnPressed();
-                        },
-                        icon: Icon(Icons.airplanemode_active_rounded),
-                        label: Text(
-                          model.buttonLabel,
-                          style: TextStyle(fontSize: model.buttonFontSize),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),

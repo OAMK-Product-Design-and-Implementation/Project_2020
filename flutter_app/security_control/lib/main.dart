@@ -14,9 +14,10 @@ import 'package:security_control/services/service_locator.dart';
 // No UI building will be done here
 // Only set the routes, navigation, themes etc.
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized(); // Needed to avoid error with servicesbinding...
-  setupLocator();
+  await setupUrgentServices(); // Setup services needed immediately at login
+  setupLocator(); // Setup non-critical services asynchronously
   runApp(MyApp());
 }
 

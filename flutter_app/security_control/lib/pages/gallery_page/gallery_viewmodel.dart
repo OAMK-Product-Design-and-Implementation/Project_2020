@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,11 @@ class GalleryViewModel extends ChangeNotifier {
   double _dropDownIconSize = 30.0;
 
   String get appBarTitle => _appBarTitle;
+
   String get dropDownButtonHint => _dropDownButtonHint;
+
   Item get selectedGallery => _selectedGallery;
+
   double get dropDownIconSize => _dropDownIconSize;
 
   List<Item> galleries = <Item>[
@@ -26,12 +31,14 @@ class GalleryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Photo>> getPhotos() =>
-      locator<PictureService>().fetchPhotos(http.Client());
+  List<List> getPhotos() =>
+      // locator<PictureService>().fetchPhotos(http.Client());
+      locator<PictureService>().picturesList;
 }
 
 class Item {
   const Item(this.name, this.icon);
+
   final String name;
   final Icon icon;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:stacked/stacked.dart';
 import 'package:animations/animations.dart';
 import 'sensors_viewmodel.dart';
@@ -16,7 +17,7 @@ class SensorsPage extends StatelessWidget {
             title: Text(model.title),
           ),
           body: Container(
-            padding: EdgeInsets.all(8),
+            // padding: EdgeInsets.all(8),
             child: StatusSection(),
           ),
         );
@@ -40,13 +41,12 @@ class StatusSection extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
             child: Container(
-              padding: const EdgeInsets.all(8),
+              //padding: const EdgeInsets.all(8),
               child: ListView(
                 children: [
-                  Text(
-                    model.statusSectionTitle,
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
+                  ListTile(
+                      title: Text(model.statusSectionTitle,
+                          style: Theme.of(context).textTheme.headline6)),
                   for (var i in model.ruuvitaglist)
                     Column(
                       children: [
@@ -75,6 +75,7 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
       //if shown info amount changes, consider custom widget
       // TODO update to ruuvitag visuals
       return Container(
+        padding: EdgeInsets.all(8),
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,17 +87,17 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                     Icon(CupertinoIcons.snow),
                     Text(
                       device.name,
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                   ],
                 ),
                 Expanded(
                   child: Text(
-                    device.status(),
+                    device.status().toUpperCase(),
                     //style: device.statusStyle(context),
-                    style: device.status() != true
-                        ? TextStyle(color: Theme.of(context).primaryColor)
-                        : TextStyle(color: Theme.of(context).accentColor),
+                    style: device.status() != 'connected'
+                        ? TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)
+                        : TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                 ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'widgets/gallery_widgets.dart';
@@ -46,15 +48,8 @@ class GalleryPage extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: FutureBuilder<List<Photo>>(
-                  future: model.getPhotos(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) print(snapshot.error);
-
-                    return snapshot.hasData
-                        ? PhotosList(photos: snapshot.data)
-                        : Center(child: CircularProgressIndicator());
-                  },
+                child: PhotosList(photos:
+                  model.getPhotos()
                 ),
               ),
             ],

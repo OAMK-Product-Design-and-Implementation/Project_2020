@@ -97,38 +97,6 @@ public class ServerSyncWorker extends Worker {
         else{
             return Result.retry();
         }
-
-//        if (serverAddress.equals("")) {
-//
-//
-//        } else {
-//            // Sync.
-//            // Instantiate the RequestQueue.
-//            RequestQueue queue = Volley.newRequestQueue(applicationContext);
-//
-//            // Request a string response from the provided URL.
-//            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//                            // Display the first 500 characters of the response string.
-//                            Log.d(DEBUG_TAG, "Response is: " + response.toString());
-//                            ArrayList msgList = jsonToMessageList(response.toString());
-//                            volleyComplete(msgList);
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    // Add error notification here?
-//                    Log.d(DEBUG_TAG, "ERROR on GET message from server" + error.toString());
-//                }
-//            });
-//
-//            // Add the request to the RequestQueue.
-//            queue.add(stringRequest);
-//
-//            return Result.success();
-//        }
     }
 
     private String downloadContent(String myurl) throws IOException {
@@ -200,7 +168,7 @@ public class ServerSyncWorker extends Worker {
         String notificationSubContent = "";
 
         if (msgList != null) {
-            Log.d(DEBUG_TAG, msgList.get(0).getClass().toString());
+            //Log.d(DEBUG_TAG, msgList.get(0).getClass().toString());
 
             for(int i = 0; i < msgList.size(); i++){
                 oneMessageList = jsonToMessageList(msgList.get(i).toString());
@@ -238,13 +206,14 @@ public class ServerSyncWorker extends Worker {
                 }
             }
 
-            if(sendNotification = true){
+            if(sendNotification == true){
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(notificationContent)
                         .setContentText(notificationSubContent)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true);
+                        .setAutoCancel(true)
+                        .setOnlyAlertOnce(false);
                 PendingIntent contentIntent = PendingIntent.getActivity(applicationContext, 0,
                         new Intent(applicationContext, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
