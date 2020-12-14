@@ -11,59 +11,59 @@ class DronePage extends StatelessWidget {
         viewModelBuilder: () => DroneViewModel(),
         builder: (context, model, child) => Scaffold(
             appBar: AppBar(title: Text(model.appBarTitle)),
-            body: Column(children: [
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(model.droneConnectionLabel,
-                          style: Theme.of(context).textTheme.headline6),
-                      trailing: model.droneConnected == true
-                          ? Text(
-                              model.droneOnlineText,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: model.labelFontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          : Text(
-                              model.droneOfflineText,
-                              style: TextStyle(
-                                color: Theme.of(context).accentColor,
-                                fontSize: model.labelFontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+            body: ListView(
+              shrinkWrap: true,
+              children: [
+                Column(children: [
+                  Card(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(model.droneConnectionLabel,
+                              style: Theme.of(context).textTheme.headline6),
+                          trailing: model.droneConnected == true
+                              ? Text(
+                                  model.droneOnlineText,
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: model.labelFontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : Text(
+                                  model.droneOfflineText,
+                                  style: TextStyle(
+                                    color: Theme.of(context).accentColor,
+                                    fontSize: model.labelFontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                        ListTile(
+                          title: Text(model.droneStatusLabel,
+                              style: Theme.of(context).textTheme.headline6),
+                          trailing: model.droneConnected == true
+                              ? Text(
+                                  model.droneStatusText,
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: model.labelFontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : Text(
+                                  model.droneStatusText,
+                                  style: TextStyle(
+                                    color: Theme.of(context).accentColor,
+                                    fontSize: model.labelFontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ],
                     ),
-                    ListTile(
-                      title: Text(model.droneStatusLabel,
-                          style: Theme.of(context).textTheme.headline6),
-                      trailing: model.droneConnected == true
-                          ? Text(
-                              model.droneStatusText,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: model.labelFontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          : Text(
-                              model.droneStatusText,
-                              style: TextStyle(
-                                color: Theme.of(context).accentColor,
-                                fontSize: model.labelFontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              _mapSection(),
-              ListView(
-                shrinkWrap: true,
-                children: [
+                  ),
+                  _mapSection(),
                   Card(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -113,9 +113,9 @@ class DronePage extends StatelessWidget {
                       )
                     ],
                   )),
-                ],
-              ),
-            ])));
+                ]),
+              ],
+            )));
   }
 }
 
