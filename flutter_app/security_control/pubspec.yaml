@@ -85,6 +85,8 @@ flutter:
    - lib/images/drone_test_img.png
    - lib/images/gopigo_test_img.png
    - lib/images/gopigo_map.png
+   - lib/images/kulkureitti.png
+   - lib/images/gopigorata.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

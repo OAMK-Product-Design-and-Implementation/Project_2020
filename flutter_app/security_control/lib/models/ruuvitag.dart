@@ -85,8 +85,8 @@ class RuuviTag {
   ]) {
     List details = jsonDecode(content)[0];
     this._batterylevel.setCurrent(details[0]);
-    this._name = details[1];
-    this._location = details[2];
+    this._name = details[1] ?? 'Ruuvitag_$id';
+    this._location = details[2] ?? 'lost';
     if (details[3] == 0) {
       this._dooropen = false;
     } else {

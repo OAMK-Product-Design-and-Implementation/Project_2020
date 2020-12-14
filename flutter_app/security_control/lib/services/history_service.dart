@@ -16,9 +16,6 @@ class HistorySyncService {
   SendPort get sendPort => _sendPort;
   LocalStorageService _localStorageService;
 
-//test
-  StreamSubscription _tempStreamSubscription;
-
 // History data:
   StreamController<List> _historyListStreamControl =
       StreamController.broadcast();
@@ -34,7 +31,7 @@ class HistorySyncService {
     _receiveBroadcastStream = _receivePort.asBroadcastStream();
     _localStorageService = locator<LocalStorageService>();
 
-    _tempStreamSubscription = _receiveBroadcastStream.listen((message) {
+    _receiveBroadcastStream.listen((message) {
       // Register the sendPort when the other isolate tells us so:
       if (message is List) {
         switch (message[0]) {
@@ -51,7 +48,7 @@ class HistorySyncService {
                 ["setaddress", _localStorageService.serverAddress.getValue()]);
             break;
           case "history":
-            print('(TRACE) HistorySyncService: history');
+            // print('(TRACE) HistorySyncService:history');
             List _tempList = jsonDecode(message[1]);
             List _tempHistoryList = List();
             for (var item in _tempList) {
@@ -59,7 +56,6 @@ class HistorySyncService {
               _tempHistoryList.add(History.fromJson(item[0], item[1]));
             }
             _historyListStreamControl.add(_tempHistoryList.toList());
-            // _mostRecent = _historyListStreamControl.stream.first;
             break;
           case "status":
             _statusListStreamControl.add(jsonDecode(message[1])[0]);
@@ -111,8 +107,8 @@ void _entryPoint(SendPort sendPort) {
 
   receivePort.listen((message) {
     if (message is List) {
-      print('(TRACE) History: HistoryIsolate:entryPoint.receivePort.listen:' +
-          message[0]);
+      print(
+          '(TRACE) HistoryIsolate:entryPoint.receivePort.listen:' + message[0]);
 
       switch (message[0]) {
         case "setinterval":
@@ -146,15 +142,12 @@ class _HistoryIsolate {
   final String _debugTag = "(TRACE) _HistoryIsolate: ";
 
   SendPort _sendPort;
-  ReceivePort _receivePort;
   Timer _syncTimer;
   Duration _syncDelay;
   String _address;
   http.Client _client = http.Client();
 
   //History
-  String _historyListString;
-  List<History> _historyList;
   DateFormat timeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
   _HistoryIsolate(SendPort sPort, ReceivePort rPort) {

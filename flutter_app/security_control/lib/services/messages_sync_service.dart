@@ -1,42 +1,31 @@
-
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:get_it/get_it.dart';
-import 'package:isolate_handler/isolate_handler.dart';
 import 'package:security_control/services/local_storage_service.dart';
 import 'package:security_control/services/service_locator.dart';
 import 'package:http/http.dart' as http;
-import 'package:security_control/models/gopigo.dart';
 import 'package:security_control/models/message.dart';
 
-class MessagesSyncService{
-
-  var _isolate;
+class MessagesSyncService {
   ReceivePort _receivePort;
   Stream _receiveBroadcastStream;
   SendPort _sendPort;
-  //Stream get receiveBroadcastStream => _receiveBroadcastStream;
   SendPort get sendPort => _sendPort;
-  StreamSubscription _tempStreamSubscription;
   LocalStorageService _localStorageService;
 
-  // Gopigo data:
-  StreamController<List> _messageListController = new StreamController.broadcast();
+  // Message data:
+  StreamController<List> _messageListController =
+      new StreamController.broadcast();
   Stream<List> get messageListStream => _messageListController.stream;
 
   List _messageList = List();
   List get messageList => _messageList;
 
-
-  MessagesSyncService(){
+  MessagesSyncService() {
     print('(TRACE) MessagesSyncService:constructor.');
     //final isolates = IsolateHandler();
     _receivePort = ReceivePort();
@@ -44,12 +33,10 @@ class MessagesSyncService{
     _localStorageService = locator<LocalStorageService>();
     const _platform = const MethodChannel('samples.flutter.dev/pushintruderalert');
 
-
-    _tempStreamSubscription = _receiveBroadcastStream.listen((message) {
+    _receiveBroadcastStream.listen((message) {
       // Register the sendPort when the other isolate tells us so:
-      if(message is List){
-
-        switch(message[0]){
+      if (message is List) {
+        switch (message[0]) {
           case "register":
             _sendPort = message[1];
             print('(TRACE) MessagesSyncService:constructor: Registered sender');
@@ -89,15 +76,14 @@ class MessagesSyncService{
     });
 
     FlutterIsolate.spawn(entryPoint, _receivePort.sendPort);
-
   }
 
-  clearMessage(int id){
+  clearMessage(int id) {
     _sendPort.send(["clearmessage", id]);
   }
 
   // Listen to server update interval and address, change when needed:
-  void _registerSettingListeners(){
+  void _registerSettingListeners() {
     _localStorageService.serverUpdateInterval.listen((value) {
       _sendPort.send(["setinterval", value]);
     });
@@ -107,40 +93,29 @@ class MessagesSyncService{
     });
   }
 
-  void stopSync(){
+  void stopSync() {
     _sendPort.send("stop");
   }
 
-  void startSync(){
+  void startSync() {
     _sendPort.send("start");
   }
-
-// void setUpdateInterval(double seconds){
-//   _sendPort.send(["setinterval", seconds]);
-// }
-
 }
-
-
 
 void entryPoint(SendPort sendPort) {
   // Entry function for the new isolate. Define actions in listen method of
   //    receivePort.
 
-  Timer syncTimer;
-
   ReceivePort receivePort = ReceivePort();
-  _SyncMessageIsolate _syncMessageIsolate = new _SyncMessageIsolate(sendPort, receivePort);
-  GetIt _locator;
+  _SyncMessageIsolate _syncMessageIsolate =
+      new _SyncMessageIsolate(sendPort, receivePort);
 
   receivePort.listen((message) {
+    if (message is List) {
+      print('(TRACE) MessagesSyncService:entryPoint.receivePort.listen:' +
+          message[0]);
 
-    // TODO: Define different get methods to perform when receiving messages
-
-    if(message is List){
-      print('(TRACE) MessagesSyncService:entryPoint.receivePort.listen:' + message[0]);
-
-      switch(message[0]){
+      switch (message[0]) {
         case "setinterval":
           _syncMessageIsolate.setDelay(message[1]);
           break;
@@ -148,140 +123,117 @@ void entryPoint(SendPort sendPort) {
           _syncMessageIsolate.setAddress(message[1]);
           break;
         case "clearmessage":
-        // message [1] = id
           _syncMessageIsolate.clearMessage(message[1]);
           break;
-      // case
       }
-
-    }
-    else if (message is String) {
-      print('(TRACE) SyncMessageIsolate: entryPoint.receivePort.listen:' + message);
+    } else if (message is String) {
+      print('(TRACE) SyncMessageIsolate: entryPoint.receivePort.listen:' +
+          message);
       if (message == "stop") {
         _syncMessageIsolate.stopSync();
-      }
-      else if (message == "start") {
+      } else if (message == "start") {
         _syncMessageIsolate.startSync();
       }
     }
   });
 
   sendPort.send(["register", receivePort.sendPort]);
-
 }
 
 class _SyncMessageIsolate {
-
   final String _debugTag = "(TRACE) _SyncMessageIsolate (messages): ";
 
   SendPort _sendPort;
-  ReceivePort _receivePort;
   Timer _syncTimer;
   Duration _syncDelay;
   String _address;
   http.Client _client;
 
-  String _goPiGoIDListString;
-  List _goPiGoIDList;
-
-  String _sensorIDListString;
-  List _sensorIDList;
-
-  _SyncMessageIsolate(SendPort sPort, ReceivePort rPort){
+  _SyncMessageIsolate(SendPort sPort, ReceivePort rPort) {
     _sendPort = sPort;
-    _receivePort = rPort;
     _syncDelay = Duration(seconds: 5);
-    _goPiGoIDList = List();
-    _sensorIDList = List();
   }
 
-  void setDelay(int value){
+  void setDelay(int value) {
     _syncDelay = Duration(seconds: value);
-    if(!(_syncTimer == null)) {
-      if(_syncTimer.isActive == true) {
+    if (!(_syncTimer == null)) {
+      if (_syncTimer.isActive == true) {
         stopSync();
         startSync();
       }
     }
   }
 
-  void setAddress(String address){
+  void setAddress(String address) {
     _address = "http://" + address;
-    if(!(_syncTimer == null)) {
-      if(_syncTimer.isActive == true) {
+    if (!(_syncTimer == null)) {
+      if (_syncTimer.isActive == true) {
         stopSync();
         startSync();
       }
     }
   }
 
-  stopSync(){
-    if(!(_syncTimer == null)) {
+  stopSync() {
+    if (!(_syncTimer == null)) {
       _syncTimer.cancel();
       _client.close();
     }
   }
 
-  startSync(){
+  startSync() {
     // Ensure we don't start multiple of these
     stopSync();
     _client = http.Client();
     _syncTimer = Timer.periodic(_syncDelay, _sync);
   }
 
-  _sync(Timer timer){
+  _sync(Timer timer) {
     _syncMessages();
   }
 
-
-  // Sync gopigos from id list:
-  void _syncMessages() async{
+  void _syncMessages() async {
     var response;
-    try{
+    try {
       response =
-        await _client.get(_address + "/api/devices/get/activemessages");
-    }
-    catch(err){
-      print(_debugTag + "ERROR: Unable to fetch messages from server:" + err.toString());
-    }
-    finally{
+          await _client.get(_address + "/api/devices/get/activemessages");
+    } catch (err) {
+      print(_debugTag +
+          "ERROR: Unable to fetch messages from server:" +
+          err.toString());
+    } finally {
       print(_debugTag + "Got messages from server: " + response.body);
       _sendPort.send(["messages", response.body]);
     }
   }
 
-  // Set gopigo name by id. Called separately, not from timer.
-  void clearMessage(int id)async{
+  void clearMessage(int id) async {
     var response;
     String body;
 
-    try{
+    try {
       body = '{"idMessage":"' + id.toString() + '"}';
-      print(_debugTag + "Sending POST to clear message with id: " + id.toString() + ". Body to send: " + body);
-      response = await _client.post(_address + "/api/message/post/messageinactive",
+      print(_debugTag +
+          "Sending POST to clear message with id: " +
+          id.toString() +
+          ". Body to send: " +
+          body);
+      response = await _client.post(
+          _address + "/api/message/post/messageinactive",
           headers: {"Content-Type": "application/json"},
           body: body);
-    }
-    catch(err){
-      print(_debugTag + "ERROR: Unable to POST clear message with id: " + id.toString() + ": " + err.toString());
-    }
-    finally{
-      print(_debugTag + "POST response clear message with id: " +id.toString() + ": " + response.body);
+    } catch (err) {
+      print(_debugTag +
+          "ERROR: Unable to POST clear message with id: " +
+          id.toString() +
+          ": " +
+          err.toString());
+    } finally {
+      print(_debugTag +
+          "POST response clear message with id: " +
+          id.toString() +
+          ": " +
+          response.body);
     }
   }
-
-  void setGoPiGoIDList(List IDList){
-    _goPiGoIDList = IDList;
-    stopSync();
-    startSync();
-  }
-
-  void setSensorIDList(List IDList){
-    _sensorIDList = IDList;
-    stopSync();
-    startSync();
-  }
-
-
 }
-

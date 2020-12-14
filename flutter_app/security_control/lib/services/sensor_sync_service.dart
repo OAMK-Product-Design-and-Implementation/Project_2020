@@ -1,29 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:get_it/get_it.dart';
-import 'package:isolate_handler/isolate_handler.dart';
-import 'package:security_control/services/local_storage_service.dart';
-import 'package:security_control/services/service_locator.dart';
 import 'package:http/http.dart' as http;
 import 'package:security_control/models/ruuvitag.dart';
+import 'package:security_control/services/local_storage_service.dart';
+import 'package:security_control/services/service_locator.dart';
 
 class SensorSyncService {
-  var _isolate;
   ReceivePort _receivePort;
   Stream _receiveBroadcastStream;
   SendPort _sendPort;
-  //Stream get receiveBroadcastStream => _receiveBroadcastStream;
   SendPort get sendPort => _sendPort;
-  StreamSubscription _tempStreamSubscription;
   LocalStorageService _localStorageService;
 
-  // Gopigo data:
+  // Ruuvitag data:
   StreamController<Map> _ruuviTagListMapStreamControl =
       new StreamController.broadcast();
   Stream<Map> get ruuviTagListMapStream => _ruuviTagListMapStreamControl.stream;
@@ -33,22 +25,17 @@ class SensorSyncService {
 
   SensorSyncService() {
     print('(TRACE) SensorSyncService:constructor.');
-    //final isolates = IsolateHandler();
     _receivePort = ReceivePort();
     _receiveBroadcastStream = _receivePort.asBroadcastStream();
     _localStorageService = locator<LocalStorageService>();
 
-    // _goPiGoJSONMap[ID] = "JSON HERE";
-    // _goPiGoJSONMapControl.add(_goPiGoJSONMap);
-
-    _tempStreamSubscription = _receiveBroadcastStream.listen((message) {
+    _receiveBroadcastStream.listen((message) {
       // Register the sendPort when the other isolate tells us so:
       if (message is List) {
         switch (message[0]) {
           case "register":
             _sendPort = message[1];
             print('(TRACE) SensorSyncService:constructor: Registered sender');
-            //_sendPort.send(["register", locator]);
             _registerSettingListeners();
             _sendPort.send([
               "setinterval",
@@ -57,17 +44,10 @@ class SensorSyncService {
             _sendPort.send(
                 ["setaddress", _localStorageService.serverAddress.getValue()]);
             break;
-          case "ruuvitagids":
-          // Blank
-
           case "ruuvitag":
             // Message[1] = id
             // message[2] = ruuvitagJSON: "[[data]]"
             //message[3] = ruuvitaglimitJSON
-            // Create a gopigo object of these and add it to the Map!
-            // Thought: does this introduce memory leaks? Are the old objects
-            //    ever deleted from memory?
-            // TODO: Maybe send all gopigos at once from isolate?
 
             if (jsonDecode(message[2]).length > 0) {
               _ruuviTagListMap[message[1]] = RuuviTag.fromJson(message[2],
@@ -125,27 +105,17 @@ class SensorSyncService {
   void startSync() {
     _sendPort.send("syncruuvitags");
   }
-
-  // void setUpdateInterval(double seconds){
-  //   _sendPort.send(["setinterval", seconds]);
-  // }
-
 }
 
 void entryPoint(SendPort sendPort) {
   // Entry function for the new isolate. Define actions in listen method of
   //    receivePort.
 
-  Timer syncTimer;
-
   ReceivePort receivePort = ReceivePort();
   _SyncRuuviTagIsolate _syncRuuviTagIsolate =
       new _SyncRuuviTagIsolate(sendPort, receivePort);
-  GetIt _locator;
 
   receivePort.listen((message) {
-    // TODO: Define different get methods to perform when receiving messages
-
     if (message is List) {
       print('(TRACE) SyncRuuviTagIsolate:entryPoint.receivePort.listen:' +
           message[0]);
@@ -197,7 +167,6 @@ class _SyncRuuviTagIsolate {
   final String _debugTag = "(TRACE) _SyncRuuviTagIsolate: ";
 
   SendPort _sendPort;
-  ReceivePort _receivePort;
   Timer _syncTimer;
   Duration _syncDelay;
   String _address;
@@ -206,15 +175,10 @@ class _SyncRuuviTagIsolate {
   String _ruuviTagIDListString;
   List _ruuviTagIDList;
 
-  String _sensorIDListString;
-  List _sensorIDList;
-
   _SyncRuuviTagIsolate(SendPort sPort, ReceivePort rPort) {
     _sendPort = sPort;
-    _receivePort = rPort;
     _syncDelay = Duration(seconds: 5);
     _ruuviTagIDList = List();
-    _sensorIDList = List();
   }
 
   void setDelay(int value) {
@@ -285,7 +249,7 @@ class _SyncRuuviTagIsolate {
     }
   }
 
-  // Sync gopigos from id list:
+  // Sync ruuvitag from id list:
   void syncRuuviTags() async {
     for (var id in _ruuviTagIDList) {
       var response;
@@ -326,7 +290,7 @@ class _SyncRuuviTagIsolate {
     }
   }
 
-  // Set gopigo name by id. Called separately, not from timer.
+  // Set RuuviTag name by id. Called separately, not from timer.
   void setRuuviTagName(int id, String name) async {
     var response;
     String body;
@@ -407,17 +371,5 @@ class _SyncRuuviTagIsolate {
           ": " +
           response.body);
     }
-  }
-
-  void setRuuviTagIDList(List IDList) {
-    _ruuviTagIDList = IDList;
-    stopSync();
-    startSync();
-  }
-
-  void setSensorIDList(List IDList) {
-    _sensorIDList = IDList;
-    stopSync();
-    startSync();
   }
 }

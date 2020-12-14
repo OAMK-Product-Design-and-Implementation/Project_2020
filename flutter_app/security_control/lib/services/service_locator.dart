@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/picture_service.dart';
 import 'package:security_control/services/local_storage_service.dart';
-import 'package:security_control/services/gopigo_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
 import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/sensor_sync_service.dart';
@@ -27,26 +25,26 @@ GetIt locator = GetIt.instance;
 
 Future setupLocator() async {
   locator.registerLazySingleton(() => NavigationService());
-  locator.registerLazySingleton(() => GoPiGoService());
-
+  locator.registerLazySingleton(() => PictureService());
 
   //history
   var historySyncInstance = HistorySyncService();
   locator.registerSingleton<HistorySyncService>(historySyncInstance);
+
+  var pictureInstance = await PictureService.getInstance();
+  locator.registerSingleton<PictureService>(pictureInstance);
 }
 
 Future setupUrgentServices() async{
   var instance = await LocalStorageService.getInstance();
   locator.registerSingleton<LocalStorageService>(instance);
-  //locator.registerLazySingleton(() => LocalStorageService());
+
   var syncInstance = ServerSyncService();
   locator.registerSingleton<ServerSyncService>(syncInstance);
 
-  var pictureInstance = await PictureService.getInstance();
-  locator.registerSingleton<PictureService>(pictureInstance);
-
   var messagesSyncInstance = MessagesSyncService();
   locator.registerSingleton<MessagesSyncService>(messagesSyncInstance);
+
   var sensorSyncInstance = SensorSyncService();
   locator.registerSingleton<SensorSyncService>(sensorSyncInstance);
 }
