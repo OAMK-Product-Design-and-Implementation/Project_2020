@@ -64,7 +64,7 @@ def PostImage(imageName, image, deviceID):
     except:
         return "post failed"
 
-# Charginstation status. Post if device should be on the chargin station
+# Chargin station status. Post if device should be on the chargin station
 def postDeviceStatus(status, deviceID):
     postUrl = "http://195.148.21.106/api/devices/post/status"
     jsonData = {
