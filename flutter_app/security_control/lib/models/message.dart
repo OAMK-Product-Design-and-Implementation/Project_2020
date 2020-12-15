@@ -1,4 +1,3 @@
-//TODO: conform to servers model of GoPiGo
 import 'dart:convert';
 
 class Message {
@@ -8,23 +7,26 @@ class Message {
   String _timestamp;
   String _explanation;
 
-  Function(int) _clearMsgCallBack; // If not null, called when setName() is called
+  Function(int)
+      _clearMsgCallBack; // If not null, called when setName() is called
 
-  Message(this._id, this._deviceName, this._messageType, this._timestamp, this._explanation, [Function(int) clearMsgCallBack]){
-    if(clearMsgCallBack != null){
+  Message(this._id, this._deviceName, this._messageType, this._timestamp,
+      this._explanation,
+      [Function(int) clearMsgCallBack]) {
+    if (clearMsgCallBack != null) {
       _clearMsgCallBack = clearMsgCallBack;
     }
   }
 
-  Message.fromJson(String content, [Function(int) clearMsgCallBack]){
+  Message.fromJson(String content, [Function(int) clearMsgCallBack]) {
     // Server brings our info in list form unfortunately, so we must do this manually
     // Content =
     List details = jsonDecode(content)[0];
     this._id = details[0];
     this._messageType = details[1];
-    this._timestamp = details[2]; // TODO: Convert from time string to datetime
+    this._timestamp = details[2];
     this._deviceName = details[3];
-    if(clearMsgCallBack != null){
+    if (clearMsgCallBack != null) {
       _clearMsgCallBack = clearMsgCallBack;
     }
   }
@@ -36,7 +38,7 @@ class Message {
   String get messageType => _messageType;
 
   void clear() {
-    if(_clearMsgCallBack != null){
+    if (_clearMsgCallBack != null) {
       _clearMsgCallBack(_id);
     }
   }
