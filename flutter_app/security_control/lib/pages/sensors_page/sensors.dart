@@ -98,30 +98,35 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                 ),
               ],
             ),
-            Row(
+            Row(mainAxisAlignment: MainAxisAlignment.end,
+              children:[
+                device.dooropen ?
+                Text("ALERT",style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)) :
+                    Text("NO ALERT" ,style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))
+              ]
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(height: 48, child: Icon(Icons.battery_std)),
-                Text(device.batterylevel.current.toString() + ' %'),
-                Container(
-                    height: 48,
-                    margin: EdgeInsets.only(left: 8),
-                    child: Icon(CupertinoIcons.thermometer)),
-                Text(device.temperature.current.toString() + ' C'),
-                Container(
-                    margin: EdgeInsets.only(left: 8),
-                    height: 48,
-                    child: Icon(CupertinoIcons.tornado)),
-                Text(device.pressure.current.toString() + ' hPa'),
-                Container(
-                    margin: EdgeInsets.only(left: 8),
-                    height: 48,
-                    child: Icon(CupertinoIcons.gauge)),
-                Text(device.humidity.current.toString() + ' %'),
+            Container(height: 48, child: Icon(Icons.battery_std)),
+            Text(device.batterylevel.current.toString() + ' %'),
+            Container(
+                height: 48,
+                margin: EdgeInsets.only(left: 8),
+                child: Icon(CupertinoIcons.thermometer)),
+            Text(device.temperature.current.toString() + ' C'),
+            Container(
+                margin: EdgeInsets.only(left: 8),
+                height: 48,
+                child: Icon(CupertinoIcons.tornado)),
+            Text(device.pressure.current.toString() + ' hPa'),
+            Container(
+                margin: EdgeInsets.only(left: 8),
+                height: 48,
+                child: Icon(CupertinoIcons.gauge)),
+            Text(device.humidity.current.toString() + ' %'),
               ],
             ),
-          ],
-        ),
-      );
+      ]));
     },
     openBuilder: (BuildContext _, VoidCallback openContainer) {
       //new viewmodel so we don't rebuild the whole page
