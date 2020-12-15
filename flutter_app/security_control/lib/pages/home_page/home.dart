@@ -167,14 +167,20 @@ class HomePage extends StatelessWidget {
                                         Icon(
                                           Icons.battery_std,
                                         ),
-                                        Text(
-                                          model.goPiGoList[i].batterylevel
-                                                  .toString() +
-                                              '%',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2,
-                                        ),
+                                        model.goPiGoList[i].batterylevel
+                                                    .current ==
+                                                404
+                                            ? Text('--')
+                                            : Text(
+                                                model.goPiGoList[i].batterylevel
+                                                        .current
+                                                        .round()
+                                                        .toString() +
+                                                    '%',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText2,
+                                              ),
                                       ],
                                     ),
                                   ),
@@ -228,16 +234,20 @@ class HomePage extends StatelessWidget {
                                         Icon(
                                           Icons.battery_std,
                                         ),
-                                        Text(
-                                          model.sensorList[i].batterylevel
-                                                  .current
-                                                  .round()
-                                                  .toString() +
-                                              '%',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2,
-                                        ),
+                                        model.sensorList[i].batterylevel
+                                                    .current ==
+                                                404
+                                            ? Text('--')
+                                            : Text(
+                                                model.sensorList[i].batterylevel
+                                                        .current
+                                                        .round()
+                                                        .toString() +
+                                                    '%',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText2,
+                                              ),
                                       ],
                                     ),
                                   ),
