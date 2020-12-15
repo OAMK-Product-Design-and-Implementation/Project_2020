@@ -30,6 +30,7 @@ class SensorsPage extends StatelessWidget {
 
 class StatusSection extends StatelessWidget {
   StatusSection({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<StatusSectionViewModel>.reactive(
@@ -75,65 +76,84 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
     closedColor: Theme.of(context).cardColor,
     closedBuilder: (BuildContext _, VoidCallback openContainer) {
       return Container(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          children: [
-            Row(
+          padding: EdgeInsets.all(8),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(CupertinoIcons.snow),
-                    Text(
-                      device.name,
-                      style: Theme.of(context).textTheme.headline6,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(CupertinoIcons.snow),
+                        Text(
+                          device.name,
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Text(
+                        device.status().toUpperCase(),
+                        style: device.connected == true
+                            ? TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold)
+                            : TextStyle(
+                                color: Theme.of(context).accentColor,
+                                fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.end,
+                      ),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Text(
-                    device.status().toUpperCase(),
-                    style: device.connected == true
-                        ? TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold)
-                        : TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.end,
-                  ),
+                Padding(padding: EdgeInsets.only(top: 8),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(Icons.gps_fixed),
+                              Text(" " + device.location,
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                            ]),
+                        device.dooropbolden
+                            ? Text("ALERT",
+                                style: TextStyle(
+                                    color: Theme.of(context).accentColor,
+                                    fontWeight: FontWeight.bold))
+                            : Text("NO ALERT",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold)),
+                      ]),
                 ),
-              ],
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.end,
-              children:[
-                device.dooropen ?
-                Text("ALERT",style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)) :
-                    Text("NO ALERT" ,style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold))
-              ]
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-            Container(height: 48, child: Icon(Icons.battery_std)),
-            Text(device.batterylevel.current.toString() + ' %'),
-            Container(
-                height: 48,
-                margin: EdgeInsets.only(left: 8),
-                child: Icon(CupertinoIcons.thermometer)),
-            Text(device.temperature.current.toString() + ' C'),
-            Container(
-                margin: EdgeInsets.only(left: 8),
-                height: 48,
-                child: Icon(CupertinoIcons.tornado)),
-            Text(device.pressure.current.toString() + ' hPa'),
-            Container(
-                margin: EdgeInsets.only(left: 8),
-                height: 48,
-                child: Icon(CupertinoIcons.gauge)),
-            Text(device.humidity.current.toString() + ' %'),
-              ],
-            ),
-      ]));
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(height: 48, child: Icon(Icons.battery_std)),
+                    Text(device.batterylevel.current.toString() + ' %'),
+                    Container(
+                        height: 48,
+                        margin: EdgeInsets.only(left: 8),
+                        child: Icon(CupertinoIcons.thermometer)),
+                    Text(device.temperature.current.toString() + ' C'),
+                    Container(
+                        margin: EdgeInsets.only(left: 8),
+                        height: 48,
+                        child: Icon(CupertinoIcons.tornado)),
+                    Text(device.pressure.current.toString() + ' hPa'),
+                    Container(
+                        margin: EdgeInsets.only(left: 8),
+                        height: 48,
+                        child: Icon(CupertinoIcons.gauge)),
+                    Text(device.humidity.current.toString() + ' %'),
+                  ],
+                ),
+              ]));
     },
     openBuilder: (BuildContext _, VoidCallback openContainer) {
       //new viewmodel so we don't rebuild the whole page
