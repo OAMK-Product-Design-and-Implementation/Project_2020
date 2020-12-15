@@ -7,6 +7,7 @@ from ruuvitag_sensor.ruuvitag import RuuviTag
 # Change here your own device's mac-address
 macs = ['C1:05:25:89:4A:F0',
         'DD:39:47:16:BA:F5',
+        'F7:BE:C3:4A:32:95',
         'EF:12:4E:E0:FC:95']
 
 #These ids are assigned for RuuviTag in the database
