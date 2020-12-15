@@ -45,8 +45,12 @@ class ServerSyncService {
                 ["setaddress", _localStorageService.serverAddress.getValue()]);
             break;
           case "gopigoids":
-          // Blank
-
+            for (var item in message[1]) {
+              if (_goPiGoListMap[item]?.id == null)
+                _goPiGoListMap[item] = GoPiGo.loading();
+            }
+            _goPiGoListMapStreamControl.add(_goPiGoListMap);
+            break;
           case "gopigo":
             // Message[1] = id
             // message[2] = gopigoJSON: "[[data]]"
@@ -63,6 +67,10 @@ class ServerSyncService {
 
   setGoPiGoName(int id, String name) {
     _sendPort.send(["setgopigoname", id, name]);
+  }
+
+  void updateGoPiGoIDlist() {
+    _sendPort.send("updategopigoidlist");
   }
 
   // Listen to server update interval and address, change when needed:
@@ -102,6 +110,9 @@ void entryPoint(SendPort sendPort) {
           break;
         case "setaddress":
           _syncIsolate.setAddress(message[1]);
+          break;
+        case "updategopigoidlist":
+          _syncIsolate.syncGoPiGoIDList();
           break;
         case "setgopigoname":
           // message [1] = id
@@ -177,9 +188,9 @@ class _SyncIsolate {
   _sync(Timer timer) {
     syncGoPiGoIDList();
     syncGoPiGos();
-    for (var i in _goPiGoIDList) {
-      print(_debugTag + i.toString());
-    }
+    // for (var i in _goPiGoIDList) {
+    //   print(_debugTag + i.toString());
+    // }
   }
 
   // Function to get gopigo id JSON from server:
@@ -205,6 +216,7 @@ class _SyncIsolate {
           _goPiGoIDList.add(i[0]);
         }
       }
+      _sendPort.send(["gopigoids", _goPiGoIDList]);
     }
   }
 

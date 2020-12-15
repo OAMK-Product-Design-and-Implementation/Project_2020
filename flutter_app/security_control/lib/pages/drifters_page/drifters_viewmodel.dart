@@ -7,20 +7,21 @@ import 'package:security_control/services/server_sync_service.dart';
 class DriftersViewModel extends BaseViewModel {
   var _serverSyncService = locator<ServerSyncService>();
   List _gopigolist = [];
-  List _gopigoidlist = [2, 3, 16]; //TODO get this from service
+  // List _gopigoidlist = [2, 3, 16]; //TODO get this from service
   String _title = "GoPigo Patrollers";
   List get gopigolist => _gopigolist;
   String get title => _title;
+
+  initalise() {
+    _serverSyncService.updateGoPiGoIDlist();
+  }
 
   listener() async {
     //Start update listener
     print('DriftersViewModel Start update listener');
     _serverSyncService.goPiGoListMapStream.listen((event) {
       _gopigolist = event.values.toList();
-      if (_gopigolist.length < _gopigoidlist.length)
-        _showLoadingIndicator();
-      else
-        notifyListeners();
+      notifyListeners();
     });
   }
 
@@ -33,6 +34,7 @@ class DriftersViewModel extends BaseViewModel {
   DriftersViewModel() {
     print('DriftersViewModel Constructor');
     if (!(_gopigolist.length > 0)) {
+      // _serverSyncService.updateGoPiGoIDlist();
       _showLoadingIndicator();
     }
   }

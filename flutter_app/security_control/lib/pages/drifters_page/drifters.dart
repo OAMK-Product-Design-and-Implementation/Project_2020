@@ -7,6 +7,9 @@ class DriftersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<DriftersViewModel>.reactive(
+      onModelReady: (model) {
+        model.initalise();
+      },
       builder: (context, model, child) {
         print('DriftersPage / DriftersViewModel built');
         return Scaffold(
