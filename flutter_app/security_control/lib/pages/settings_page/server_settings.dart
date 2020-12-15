@@ -29,9 +29,6 @@ class ServerSettingsPage extends StatelessWidget {
                     model.maxServerUpdateInterval,
                     model.minServerUpdateInterval,
                     model.saveServerUpdateInterval()),
-                FlatButton(onPressed: model.stopSync, child: Text("STOP SYNC")),
-                FlatButton(
-                    onPressed: model.startSync, child: Text("START SYNC"))
               ],
             ))));
   }

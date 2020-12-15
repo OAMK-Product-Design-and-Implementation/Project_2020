@@ -10,9 +10,19 @@ Widget mapIconPlacer(context, model, device) {
         curve: Curves.fastOutSlowIn,
         duration: Duration(milliseconds: 500),
         alignment: model?.location[device?.location] ?? model.location['lost'],
-        child: Icon(
-          Icons.local_taxi,
-          size: 26,
+        child: Column(mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.local_taxi,
+              size: 26,
+            ),
+            Card(elevation: 0,
+                child:
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(device.name),
+                ),)
+          ],
         )),
   );
 }
