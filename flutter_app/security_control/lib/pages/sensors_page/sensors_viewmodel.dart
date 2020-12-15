@@ -7,7 +7,7 @@ import 'package:security_control/services/sensor_sync_service.dart';
 class SensorsViewModel extends BaseViewModel {
   var _sensorSyncService = locator<SensorSyncService>();
   List _ruuvitaglist = [];
-  String _title = "Sensors"; //TODO FINAL: replace temp title
+  String _title = "Sensors";
   String get title => _title;
   List get ruuvitaglist => _ruuvitaglist;
 
@@ -40,7 +40,6 @@ class SensorsViewModel extends BaseViewModel {
 }
 
 class StatusSectionViewModel extends SensorsViewModel {
-  //BaseViewModel {
   String _statusSectionTitle = "RuuviTags";
   String get statusSectionTitle => _statusSectionTitle;
 
