@@ -1,11 +1,7 @@
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:security_control/services/picture_service.dart';
 import 'package:security_control/services/service_locator.dart';
-import 'package:security_control/models/photo.dart';
 
 class GalleryViewModel extends ChangeNotifier {
   final String _appBarTitle = "Gallery";
@@ -31,9 +27,7 @@ class GalleryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<List> getPhotos() =>
-      // locator<PictureService>().fetchPhotos(http.Client());
-      locator<PictureService>().picturesList;
+  List<List> getPhotos() => locator<PictureService>().picturesList;
 }
 
 class Item {
