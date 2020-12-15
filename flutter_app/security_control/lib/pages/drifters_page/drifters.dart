@@ -49,15 +49,6 @@ class MapSection extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     child: Container(child: Image.asset(model.map)),
                   ),
-                  AnimatedAlign(
-                      //TODO remove test widget
-                      curve: Curves.fastOutSlowIn,
-                      duration: Duration(milliseconds: 500),
-                      alignment: Alignment(0.79340, 0.31993),
-                      child: Icon(
-                        Icons.local_taxi,
-                        size: 26,
-                      )),
                   for (var item in model.gopigolist)
                     //check not loading element
                     if (item.id != -5) mapIconPlacer(context, model, item),

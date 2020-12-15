@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:security_control/models/gopigo.dart';
 import 'package:security_control/services/service_locator.dart';
@@ -7,7 +8,6 @@ import 'package:security_control/services/server_sync_service.dart';
 class DriftersViewModel extends BaseViewModel {
   var _serverSyncService = locator<ServerSyncService>();
   List _gopigolist = [];
-  // List _gopigoidlist = [2, 3, 16]; //TODO get this from service
   String _title = "GoPigo Patrollers";
   List get gopigolist => _gopigolist;
   String get title => _title;
@@ -34,7 +34,6 @@ class DriftersViewModel extends BaseViewModel {
   DriftersViewModel() {
     print('DriftersViewModel Constructor');
     if (!(_gopigolist.length > 0)) {
-      // _serverSyncService.updateGoPiGoIDlist();
       _showLoadingIndicator();
     }
   }
@@ -49,7 +48,7 @@ class MapSectionViewModel extends DriftersViewModel {
   String get map => _mapPath;
   double get height => _boxHeight;
 
-  ///aligntment position calculated by (2*location/realsize)-1
+  /// aligntment position calculated by (2*location/realsize)-1
   /// ie picture dimensions [1200 x 640]
   /// desired icon placement is at [400 x 312]
   ///  (2*400/1200)-1 = [-0,33] & (2*312/640)-1 = [-0,025]
@@ -68,11 +67,6 @@ class MapSectionViewModel extends DriftersViewModel {
     '10': Alignment(0.72340, -0.7808),
     '11': Alignment(0.79340, 0.31993),
     'lost': Alignment(-0.80, -1),
-    //TODO remove temporary positions
-    'Latauspaikka': Alignment(-0.95, -1),
-    'charge_station': Alignment(-0.95, -1),
-    'hall_00': Alignment(-0.95, -1),
-    'hall_toimii': Alignment(-0.95, -1),
   };
 
   get location => _locationsMap;
@@ -82,8 +76,8 @@ class StatusSectionViewModel extends DriftersViewModel {
   String _statusSectionTitle = "Active";
   String get statusSectionTitle => _statusSectionTitle;
 
-  void updateDrifterBatterySetting(GoPiGo device, int newValue) {
-    device.setBatteryLevel(newValue);
+  void updateDrifterBatterySetting(GoPiGo device, double newValue) {
+    device.setBatteryLimit(newValue);
     notifyListeners();
   }
 }
@@ -92,14 +86,33 @@ class GoPiGoSettingsViewModel extends BaseViewModel {
   GoPiGo _tempDevice = new GoPiGo.empty();
   GoPiGo _device;
   get name => _tempDevice.name;
-  get batterylevel => _tempDevice.batterylevel;
+
+  double get batterylimit => _tempDevice.batterylevel.lowerLimit;
 
   get id => _tempDevice.id;
 
   Object get device => _tempDevice;
 
-  void sliderUpdate(int newValue) {
-    _tempDevice.setBatteryLevel(newValue);
+  batterySlider(BuildContext context, device) {
+    Widget batteryLimitSlider = Slider(
+      value: batterylimit,
+      min: 0,
+      max: 100,
+      divisions: 100,
+      label: batterylimit.round().toString(),
+      onChanged: (double value) {
+        sliderUpdate('battery', 0, value);
+      },
+    );
+    return batteryLimitSlider;
+  }
+
+  void sliderUpdate(String type, double upper, double lower) {
+    switch (type) {
+      case 'battery':
+        _tempDevice.setBatteryLimit(lower);
+        break;
+    }
     notifyListeners();
   }
 
@@ -111,14 +124,15 @@ class GoPiGoSettingsViewModel extends BaseViewModel {
   void setdevice(GoPiGo device) {
     _tempDevice.setName(device.name);
     _tempDevice.setId(device.id);
-    _tempDevice.setBatteryLevel(device.batterylevel);
+    _tempDevice.setCurrentBatteryLevel(device.batterylevel.current);
+    _tempDevice.setBatteryLimit(device.batterylevel.lowerLimit);
     _device = device;
     print('setdevice ${device.name}');
   }
 
   void updateSettings() {
     print('GoPiGoSettingsViewModel/updateSettings');
-    _device.setBatteryLevel(_tempDevice.batterylevel);
     _device.setName(_tempDevice.name);
+    _device.setNewLimits(_tempDevice.batterylevel.lowerLimit, _tempDevice.id);
   }
 }

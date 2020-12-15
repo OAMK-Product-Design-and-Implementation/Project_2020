@@ -43,10 +43,15 @@ Widget gopigoListTileAnimated(context, device, model) {
               Icon(
                 Icons.battery_std,
               ),
-              Text(
-                device.batterylevel.toString() + '%',
-                style: Theme.of(context).textTheme.bodyText2,
-              ),
+              device.batterylevel.current == 404
+                  ? Text(
+                      '--',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    )
+                  : Text(
+                      device.batterylevel.current.round().toString() + '%',
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
             ],
           ),
         ),
@@ -102,47 +107,8 @@ Widget gopigoListTileAnimated(context, device, model) {
                       ),
                       Divider(),
                       ListTile(
-                        leading: Icon(Icons.message),
-                        title: Text("setting 2"),
-                        trailing: Checkbox(
-                          value: true,
-                          onChanged: (value) {
-                            value = !value;
-                          },
-                        ),
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Text('batterylevel warning'),
-                        title: Slider(
-                          value: model.batterylevel.toDouble(),
-                          min: 0,
-                          max: 100,
-                          divisions: 5,
-                          label:
-                              model.batterylevel.toDouble().round().toString(),
-                          onChanged: (double value) {
-                            model.sliderUpdate(value.round().toInt());
-                          },
-                        ),
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(Icons.message),
-                        title: Text("setting 2"),
-                        trailing: Checkbox(
-                          value: true,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(Icons.message),
-                        title: Text("setting 2"),
-                        trailing: Checkbox(
-                          value: true,
-                          onChanged: (value) {},
-                        ),
+                        leading: Text('Battery limit (%)'),
+                        subtitle: model.batterySlider(context, device),
                       ),
                     ],
                   ),

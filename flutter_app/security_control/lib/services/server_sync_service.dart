@@ -54,10 +54,12 @@ class ServerSyncService {
           case "gopigo":
             // Message[1] = id
             // message[2] = gopigoJSON: "[[data]]"
-            // Create a gopigo object of these and add it to the Map!
-            _goPiGoListMap[message[1]] =
-                GoPiGo.fromJson(message[2], message[1], setGoPiGoName);
-            _goPiGoListMapStreamControl.add(_goPiGoListMap);
+            // message[3] = gopigolimitJSON
+            if (jsonDecode(message[2]).length > 0) {
+              _goPiGoListMap[message[1]] = GoPiGo.fromJson(message[2],
+                  message[1], message[3], setGoPiGoName, setGoPiGoLimits);
+              _goPiGoListMapStreamControl.add(_goPiGoListMap);
+            }
         }
       }
     });
@@ -67,6 +69,10 @@ class ServerSyncService {
 
   setGoPiGoName(int id, String name) {
     _sendPort.send(["setgopigoname", id, name]);
+  }
+
+  setGoPiGoLimits(int id, double lowerBattery) {
+    _sendPort.send(["setbatterylimit", id, lowerBattery]);
   }
 
   void updateGoPiGoIDlist() {
@@ -113,6 +119,9 @@ void entryPoint(SendPort sendPort) {
           break;
         case "updategopigoidlist":
           _syncIsolate.syncGoPiGoIDList();
+          break;
+        case "setbatterylimit":
+          _syncIsolate.setGoPiGoBatteryLimit(message[1], message[2]);
           break;
         case "setgopigoname":
           // message [1] = id
@@ -188,9 +197,6 @@ class _SyncIsolate {
   _sync(Timer timer) {
     syncGoPiGoIDList();
     syncGoPiGos();
-    // for (var i in _goPiGoIDList) {
-    //   print(_debugTag + i.toString());
-    // }
   }
 
   // Function to get gopigo id JSON from server:
@@ -224,6 +230,7 @@ class _SyncIsolate {
   void syncGoPiGos() async {
     for (var id in _goPiGoIDList) {
       var response;
+      var limitresponse;
       try {
         response =
             await _client.get(_address + "/api/gopigoid/get/" + id.toString());
@@ -233,13 +240,29 @@ class _SyncIsolate {
             id.toString() +
             ": " +
             err.toString());
+      }
+
+      try {
+        limitresponse = await _client
+            .get(_address + "/api/devices/get/batterylimits/" + id.toString());
+      } catch (err) {
+        print(_debugTag +
+            "ERROR: Unable to fetch GoPiGo battery limits with id:" +
+            id.toString() +
+            ": " +
+            err.toString());
       } finally {
         print(_debugTag +
-            "Got gopigo details with id " +
+            "Got GoPiGo details with id " +
             id.toString() +
             " " +
             response.body);
-        _sendPort.send(["gopigo", id, response.body]);
+        print(_debugTag +
+            "Got GoPiGo limits with id " +
+            id.toString() +
+            " " +
+            limitresponse.body);
+        _sendPort.send(["gopigo", id, response.body, limitresponse.body]);
       }
     }
   }
@@ -268,6 +291,39 @@ class _SyncIsolate {
     } finally {
       print(_debugTag +
           "POST response set gopigo name with id: " +
+          id.toString() +
+          ": " +
+          response.body);
+    }
+  }
+
+  void setGoPiGoBatteryLimit(int id, double limit) async {
+    var response;
+    String body;
+    try {
+      body = '{"Batterylimit": "' +
+          limit.toString() +
+          '", "Devices_idDevice": "' +
+          id.toString() +
+          '"}';
+      print(_debugTag +
+          "Sending POST to set gopigo battery limit with id: " +
+          id.toString() +
+          ". Body to send: " +
+          body);
+      response = await _client.post(
+          _address + "/api/devices/post/batterylimits",
+          headers: {"Content-Type": "application/json"},
+          body: body);
+    } catch (err) {
+      print(_debugTag +
+          "ERROR: Unable to POST Batterylimit with id: " +
+          id.toString() +
+          ": " +
+          err.toString());
+    } finally {
+      print(_debugTag +
+          "POST response set gopigo battery limit with id: " +
           id.toString() +
           ": " +
           response.body);
