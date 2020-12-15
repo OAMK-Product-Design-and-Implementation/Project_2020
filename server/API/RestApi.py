@@ -204,7 +204,7 @@ def getRuuvitagLatest(deviceid):
     LEFT JOIN Battery ON Devices.idDevice = Battery.Devices_idDevice 
     LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice 
     WHERE Devices.idDevice = {} AND Devices.DeviceType = "ruuvitag" 
-    ORDER BY GREATEST(Measurements.Timestamp, Door_status.Timestamp) DESC LIMIT 1'''.format(deviceid)
+    ORDER BY Measurements.Timestamp DESC, Door_status.Timestamp DESC, Battery.Timestamp DESC, Location.Timestamp DESC LIMIT 1'''.format(deviceid)
     data = db.sqlQuery(query)
     return jsonify(data)
 
