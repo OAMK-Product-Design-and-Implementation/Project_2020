@@ -455,7 +455,7 @@ def postGopigoBatteryLimits():
     db.sqlInsert(query)
     return "Post successful"
 
-@app.route('/api/devices/post/batterylimits/<deviceID>', methods=['GET'])
+@app.route('/api/devices/get/batterylimits/<deviceID>', methods=['GET'])
 def getGopigoBatteryLimits(deviceID):
     content = request.get_json()
     query = '''Select Batterylimit from Measurements_Limits WHERE Devices_idDevice = "{}"'''.format(deviceID)
