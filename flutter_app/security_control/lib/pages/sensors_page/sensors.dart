@@ -93,7 +93,7 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                 Expanded(
                   child: Text(
                     device.status().toUpperCase(),
-                    style: device.status() != 'connected'
+                    style: device.connected == true
                         ? TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold)
