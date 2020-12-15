@@ -107,7 +107,8 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                     ),
                   ],
                 ),
-                Padding(padding: EdgeInsets.only(top: 8),
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,9 +119,10 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                             children: [
                               Icon(Icons.gps_fixed),
                               Text(" " + device.location,
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             ]),
-                        device.dooropbolden
+                        device.dooropen
                             ? Text("ALERT",
                                 style: TextStyle(
                                     color: Theme.of(context).accentColor,
