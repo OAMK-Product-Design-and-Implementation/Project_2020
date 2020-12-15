@@ -461,6 +461,32 @@ def getGopigoBatteryLimits(deviceID):
     query = '''Select Batterylimit from Measurements_Limits WHERE Devices_idDevice = "{}"'''.format(deviceID)
     data = db.sqlQuery(query)
     return jsonify(data)
+
+# Gopigo set OpenOrNot active event into inactive POST
+@app.route('/api/gopigo/post/eventinactive', methods=['POST'])
+def postEventInactive():
+    content = request.get_json()
+    query = '''UPDATE Door_status 
+                JOIN Door ON Door_status.Door_idDoor = Door.idDoor
+                JOIN Devices ON Door.Devices_idDevice = Devices.idDevice
+                JOIN Location ON Devices.idDevice = Location.Devices_idDevice
+                SET Door_status.Active = "0" WHERE Door_status.Active = "1" AND Location.Segment = "{}"'''.format(
+                    content['Segment'])
+    db.sqlInsert(query)
+    return "Post successful"
+
+# Get active OpenOrNots
+@app.route('/api/gopigo/get/actives', methods=['GET'])
+def getGopigoActives():
+    content = request.get_json()
+    query = '''SELECT Location.Segment, Door_status.Timestamp
+                FROM Door LEFT JOIN Devices ON Door.Devices_idDevice = Devices.idDevice
+                LEFT JOIN Door_status ON Door.idDoor = Door_status.Door_idDoor
+                LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice
+                WHERE Door_status.OpenOrNot = "1" AND Door_status.Active = "1" ORDER BY Door_status.Timestamp DESC LIMIT 1'''
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
 #
 # End
 
