@@ -250,7 +250,7 @@ def getGopigoDetails(deviceid):
     content = request.get_json()
     query = '''SELECT Devices.DeviceName, Battery.BatteryStatus, Location.Segment, Devices.Connected FROM Devices 
                 LEFT JOIN Battery ON Devices.idDevice = Battery.Devices_idDevice LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice
-                WHERE idDevice = "{}" ORDER BY GREATEST(Battery.Timestamp, Location.Timestamp) LIMIT 1'''.format(deviceid)
+                WHERE idDevice = "{}" ORDER BY Battery.Timestamp DESC, Location.Timestamp DESC LIMIT 1'''.format(deviceid)
     data = db.sqlQuery(query)
     return jsonify(data)
 
