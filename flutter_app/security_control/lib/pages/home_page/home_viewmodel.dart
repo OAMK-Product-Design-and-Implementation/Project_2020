@@ -1,16 +1,12 @@
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:security_control/models/message.dart';
 import 'package:security_control/router.gr.dart';
+import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/navigation_service.dart';
 import 'package:security_control/services/sensor_sync_service.dart';
-import 'package:security_control/services/service_locator.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-
-import 'package:security_control/services/messages_sync_service.dart';
 import 'package:security_control/services/server_sync_service.dart';
-
+import 'package:security_control/services/service_locator.dart';
 
 class HomeViewModel extends ChangeNotifier {
   NavigationService _navigationService = locator<NavigationService>();
@@ -89,7 +85,6 @@ class HomeViewModel extends ChangeNotifier {
         'Charge Station', Icon(Icons.airline_seat_legroom_extra)),
     const MyDrawerItems('Settings', Icon(Icons.settings)),
     const MyDrawerItems('Logout', Icon(Icons.logout)),
-
   ];
 
   void drawerItemOnPressed(int i) {
@@ -122,17 +117,15 @@ class HomeViewModel extends ChangeNotifier {
   List actionsRequired;
 
   initialise() {
-
     _messagesSyncService.messageListStream.listen((event) {
       actionsRequired = event;
       _intruderAlert = false;
       _criticalActionsCount = 0;
-      for(Message action in actionsRequired){
-        if(action.messageType == "Intruder"){
+      for (Message action in actionsRequired) {
+        if (action.messageType == "Intruder") {
           _intruderAlert = true;
           _criticalActionsCount++;
-        }
-        else if(action.messageType == "Error"){
+        } else if (action.messageType == "Error") {
           _criticalActionsCount++;
         }
       }
@@ -152,19 +145,19 @@ class HomeViewModel extends ChangeNotifier {
     });
 
     _sensorList = _sensorSyncService.ruuviTagListMap.values.toList();
-
-
   }
+
   stopSync() {
     _serverSyncService.stopSync();
     _messagesSyncService.stopSync();
     _sensorSyncService.stopSync();
   }
+
   showRequiredActionsDialog(BuildContext context) {
     Widget clearButton = FlatButton(
       child: Text("CLEAR ALL"),
       onPressed: () {
-        for(var msg in actionsRequired){
+        for (var msg in actionsRequired) {
           msg.clear();
         }
         Navigator.of(context).pop();
@@ -197,17 +190,22 @@ class HomeViewModel extends ChangeNotifier {
                         },
                         child: Padding(
                             padding: EdgeInsets.all(16),
-                            child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                              Text(actionsRequired[index].deviceName +": " +
-                                  actionsRequired[index].messageType,
-                                style: Theme.of(context).textTheme.headline6,),
-                              Text(actionsRequired[index].explanation),
-                              Divider(),
-                              Text(actionsRequired[index].timestamp, style: TextStyle(color: Colors.grey)),
-
-                            ]))));
+                                  Text(
+                                    actionsRequired[index].deviceName +
+                                        ": " +
+                                        actionsRequired[index].messageType,
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                  Text(actionsRequired[index].explanation),
+                                  Divider(),
+                                  Text(actionsRequired[index].timestamp,
+                                      style: TextStyle(color: Colors.grey)),
+                                ]))));
               },
             ),
           ),

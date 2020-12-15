@@ -1,9 +1,6 @@
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-
-import 'package:flutter/material.dart';
-import 'package:security_control/models/photo.dart';
 
 class LatestPicture extends StatelessWidget {
   final List<List> photos;

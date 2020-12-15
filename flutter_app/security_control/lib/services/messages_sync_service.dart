@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_isolate/flutter_isolate.dart';
-import 'package:security_control/services/local_storage_service.dart';
-import 'package:security_control/services/service_locator.dart';
 import 'package:http/http.dart' as http;
 import 'package:security_control/models/message.dart';
+import 'package:security_control/services/local_storage_service.dart';
+import 'package:security_control/services/service_locator.dart';
 
 class MessagesSyncService {
   ReceivePort _receivePort;
@@ -31,7 +30,8 @@ class MessagesSyncService {
     _receivePort = ReceivePort();
     _receiveBroadcastStream = _receivePort.asBroadcastStream();
     _localStorageService = locator<LocalStorageService>();
-    const _platform = const MethodChannel('samples.flutter.dev/pushintruderalert');
+    const _platform =
+        const MethodChannel('samples.flutter.dev/pushintruderalert');
 
     _receiveBroadcastStream.listen((message) {
       // Register the sendPort when the other isolate tells us so:
@@ -55,17 +55,19 @@ class MessagesSyncService {
 
             List _tempList = jsonDecode(message[1]);
             List _tempMessagesList = List();
-            for(var msg in _tempList){
-              _tempMessagesList.add(Message(msg[0], msg[4], msg[1], msg[3] , msg[2], clearMessage));
-              print("(TRACE): MESSAGE from MessagesSyncService: " + msg.toString());
-              if(msg[1] == "Intruder"){
-                try{
+            for (var msg in _tempList) {
+              _tempMessagesList.add(Message(
+                  msg[0], msg[4], msg[1], msg[3], msg[2], clearMessage));
+              print("(TRACE): MESSAGE from MessagesSyncService: " +
+                  msg.toString());
+              if (msg[1] == "Intruder") {
+                try {
                   _platform.invokeMethod(
                       "pushIntruderAlert", <String>["INTRUDER ALERT", msg[2]]);
-                }
-                catch(err){
+                } catch (err) {
                   print("(TRACE): MessagesSyncService: Error pushing platform"
-                      "notification:" + err.toString());
+                          "notification:" +
+                      err.toString());
                 }
               }
             }

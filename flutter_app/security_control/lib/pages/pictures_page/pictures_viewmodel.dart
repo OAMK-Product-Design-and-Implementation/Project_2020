@@ -1,14 +1,10 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:security_control/router.gr.dart';
 import 'package:security_control/services/navigation_service.dart';
-import 'package:security_control/services/service_locator.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:security_control/models/photo.dart';
 import 'package:security_control/services/picture_service.dart';
-import 'package:http/http.dart' as http;
+import 'package:security_control/services/service_locator.dart';
 
 class PicturesViewModel extends ChangeNotifier {
   NavigationService _navigationService = locator<NavigationService>();
@@ -30,5 +26,4 @@ class PicturesViewModel extends ChangeNotifier {
 
   Future<List<List>> getLatestPhoto() =>
       locator<PictureService>().fetchPhotos(http.Client());
-
 }

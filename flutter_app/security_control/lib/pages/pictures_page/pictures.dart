@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+
 import 'pictures_viewmodel.dart';
 import 'widgets/pictures_widgets.dart';
-import 'package:security_control/models/photo.dart';
 
 //Pictures page
 

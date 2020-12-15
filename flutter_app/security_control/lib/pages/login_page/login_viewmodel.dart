@@ -1,16 +1,13 @@
-import 'package:security_control/router.gr.dart';
-import 'package:security_control/services/navigation_service.dart';
-import 'package:security_control/services/service_locator.dart';
-import 'package:security_control/services/server_sync_service.dart';
-import 'package:security_control/services/messages_sync_service.dart';
-import 'package:security_control/services/sensor_sync_service.dart';
-
-import 'login.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:security_control/router.gr.dart';
+import 'package:security_control/services/messages_sync_service.dart';
+import 'package:security_control/services/navigation_service.dart';
+import 'package:security_control/services/sensor_sync_service.dart';
+import 'package:security_control/services/server_sync_service.dart';
+import 'package:security_control/services/service_locator.dart';
 
-class LoginViewModel extends ChangeNotifier{
-
+class LoginViewModel extends ChangeNotifier {
   NavigationService _navigationService = locator<NavigationService>();
   ServerSyncService _serverSyncService = locator<ServerSyncService>();
   MessagesSyncService _messagesSyncService = locator<MessagesSyncService>();
@@ -29,9 +26,10 @@ class LoginViewModel extends ChangeNotifier{
   String _loginDataErrorLabel = "Wrong username or password";
 
   // This is the correct way of getting a reference to a private member variable
-  TextEditingController get userNameController{
+  TextEditingController get userNameController {
     return _userNameController;
   }
+
   // Alternative notation is:
   TextEditingController get passwordController => _passwordController;
   String get title => _title;
@@ -42,27 +40,24 @@ class LoginViewModel extends ChangeNotifier{
   String get passwordFieldHint => _passwordFieldHint;
   bool get errorVisible => _errorVisible;
 
-  void _setErrorVisibility(bool visible){
+  void _setErrorVisibility(bool visible) {
     _errorVisible = true;
     notifyListeners();
   }
 
-  void login(){
+  void login() {
     String username = _userNameController.text;
     String password = _passwordController.text;
 
     //TODO: implement actual login logic
-    if(username == ""){
+    if (username == "") {
       _loginSuccess = true;
       _navigationService.navigateToAndReplace(Routes.homePage);
       startSync();
-
-    }
-    else{
+    } else {
       _loginSuccess = false;
       _setErrorVisibility(true);
     }
-
   }
 
   startSync() {
@@ -70,6 +65,4 @@ class LoginViewModel extends ChangeNotifier{
     _messagesSyncService.startSync();
     _sensorSyncService.startSync();
   }
-
-
 }
