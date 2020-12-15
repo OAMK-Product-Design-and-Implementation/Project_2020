@@ -9,6 +9,9 @@ class SensorsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<SensorsViewModel>.reactive(
+      onModelReady: (model) {
+        model.initialise();
+      },
       builder: (context, model, child) {
         print('SensorsPage / SensorsViewModel built');
         return Scaffold(
@@ -16,7 +19,6 @@ class SensorsPage extends StatelessWidget {
             title: Text(model.title),
           ),
           body: Container(
-            // padding: EdgeInsets.all(8),
             child: StatusSection(),
           ),
         );
@@ -32,7 +34,7 @@ class StatusSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<StatusSectionViewModel>.reactive(
       onModelReady: (model) {
-        model.initialise();
+        model.listener();
       },
       builder: (context, model, child) {
         print('StatusSectionViewModel built');
@@ -40,7 +42,6 @@ class StatusSection extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
             child: Container(
-              //padding: const EdgeInsets.all(8),
               child: ListView(
                 children: [
                   ListTile(
@@ -50,7 +51,9 @@ class StatusSection extends StatelessWidget {
                     Column(
                       children: [
                         Divider(),
-                        _ruuvitagListTileAnimated(context, i, model),
+                        i.id == -5
+                            ? CircularProgressIndicator()
+                            : _ruuvitagListTileAnimated(context, i, model),
                       ],
                     ),
                 ],
@@ -65,7 +68,7 @@ class StatusSection extends StatelessWidget {
 }
 
 Widget _ruuvitagListTileAnimated(context, device, model) {
-  print('[${device.name}] section built in _ruuvitagListTileAnimated');
+  // print('[${device.name}] section built in _ruuvitagListTileAnimated');
   return OpenContainer(
     transitionType: ContainerTransitionType.fade,
     closedElevation: 0.0,
@@ -90,9 +93,13 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                 Expanded(
                   child: Text(
                     device.status().toUpperCase(),
-                    style: device.connected == true
-                        ? TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)
-                        : TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
+                    style: device.status() != 'connected'
+                        ? TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold)
+                        : TextStyle(
+                            color: Theme.of(context).accentColor,
+                            fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                 ),

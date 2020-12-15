@@ -6,18 +6,36 @@ import 'package:security_control/services/sensor_sync_service.dart';
 
 class SensorsViewModel extends BaseViewModel {
   var _sensorSyncService = locator<SensorSyncService>();
-  List _ruuvitaglist;
-  @override
+  List _ruuvitaglist = [];
   String _title = "Sensors"; //TODO FINAL: replace temp title
   String get title => _title;
   List get ruuvitaglist => _ruuvitaglist;
+
   initialise() {
+    print('SensorsViewModel initialise');
+    _sensorSyncService.updateRuuvitagIDlist();
+  }
+
+  listener() async {
+    print('SensorsViewModel Start update listener');
     _sensorSyncService.ruuviTagListMapStream.listen((event) {
       _ruuvitaglist = event.values.toList();
       notifyListeners();
     });
+  }
 
-    _ruuvitaglist = _sensorSyncService.ruuviTagListMap.values.toList();
+  void _showLoadingIndicator() {
+    print('loading indicator added');
+    _ruuvitaglist.add(RuuviTag.loading());
+    notifyListeners();
+  }
+
+  SensorsViewModel() {
+    print('SensorsViewModel Constructor');
+    if (!(_ruuvitaglist.length > 0)) {
+      print("force get ruuvitag info");
+      _showLoadingIndicator();
+    }
   }
 }
 

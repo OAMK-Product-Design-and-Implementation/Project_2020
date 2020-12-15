@@ -1,9 +1,6 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:security_control/models/measurements.dart';
 
-//TODO: conform to servers model of RuuviTag
 class RuuviTag {
   int _id;
   String _name;
@@ -14,7 +11,7 @@ class RuuviTag {
   Measurements _temperature = Measurements.empty();
   Measurements _humidity = Measurements.empty();
   Measurements _pressure = Measurements.empty();
-  bool _connected; // = true; //TODO delete? no use/info from database
+  bool _connected;
   Function(int, String) _updateNameCallBack;
   Function(double, double, double, double, double, double, double, int)
       _updateLimitsCallBack;
@@ -31,7 +28,6 @@ class RuuviTag {
   bool get connected => _connected;
 
   //setters
-
   void setId(int i) => _id = i;
   void setCurrentBatteryLevel(double i) => _batterylevel.setCurrent(i);
   void setCurrentTemperature(double k) => _temperature.setCurrent(k);
@@ -74,6 +70,9 @@ class RuuviTag {
     _pressure.setCurrent(pressure);
   }
   RuuviTag.empty();
+  RuuviTag.loading() {
+    _id = -5;
+  }
 
   RuuviTag.fromJson(
     String content,
@@ -173,16 +172,7 @@ class RuuviTag {
     }
   }
 
-  //TODO underwork pls ignore
   String status() {
     return _connected ? 'connected' : 'disconnected';
-  }
-
-  TextStyle statusStyle(context) {
-    return _connected
-        ? Theme.of(context)
-            .textTheme
-            .caption //TODO find correct theme to make this orange text
-        : Theme.of(context).textTheme.button;
   }
 }
