@@ -98,7 +98,7 @@ class SubSettingsViewModel extends ChangeNotifier {
   setServerAddress() {
     _serverAddress = _serverAddressEditingController.text;
     _localStorageService.serverAddress.setValue(_serverAddress);
-    _serverSyncService.stopSync();
+    startSync();
   }
 
   // Call this to update the interval to viewmodel
