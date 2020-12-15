@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:animations/animations.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
-import 'package:marquee/marquee.dart';
 
 import 'package:flutter/material.dart';
-import 'package:security_control/models/photo.dart';
 
 class PhotosList extends StatelessWidget {
   final List<List> photos;
@@ -61,85 +58,78 @@ class PhotosList extends StatelessWidget {
                     return Scaffold(
                         appBar: AppBar(
                           title: Text("Picture"),
-                          actions: <Widget>[
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                //TODO delete picture
-
-                                Navigator.pop(context, true);
-                              },
-                              tooltip: 'Delete',
-                            )
-                          ],
                         ),
-                        body: Card(
-                            child: Column(
+                        body: ListView(
                           children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Image.file(photos[index][0]),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.only(
-                                    top: 8.0,
-                                    left: 8.0,
-                                    right: 8.0,
-                                    bottom: 8.0),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Filename:",
-                                        textAlign: TextAlign.start,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                      ),
-                                      Expanded(
-                                          child: Text(
-                                        p.basename(photos[index][0].path),
-                                        textAlign: TextAlign.end,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                      )),
-                                    ])),
-                            Padding(
-                                padding: EdgeInsets.only(
-                                    top: 8.0,
-                                    left: 8.0,
-                                    right: 8.0,
-                                    bottom: 8.0),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Date:",
-                                        textAlign: TextAlign.start,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                      ),
-                                      Expanded(
-                                          child: Text(
-                                        DateFormat("yyyy-MM-dd  HH:mm:ss")
-                                            .format(photos[index][1])
-                                            .toString(),
-                                        textAlign: TextAlign.end,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                      ))
-                                    ])),
+                            Card(
+                                child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Image.file(photos[index][0]),
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 8.0,
+                                        left: 8.0,
+                                        right: 8.0,
+                                        bottom: 8.0),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Filename:",
+                                            textAlign: TextAlign.start,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                          Expanded(
+                                              child: Text(
+                                            p.basename(photos[index][0].path),
+                                            textAlign: TextAlign.end,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          )),
+                                        ])),
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 8.0,
+                                        left: 8.0,
+                                        right: 8.0,
+                                        bottom: 8.0),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Date:",
+                                            textAlign: TextAlign.start,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ),
+                                          Expanded(
+                                              child: Text(
+                                            DateFormat("yyyy-MM-dd  HH:mm:ss")
+                                                .format(photos[index][1])
+                                                .toString(),
+                                            textAlign: TextAlign.end,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                          ))
+                                        ])),
+                              ],
+                            )),
                           ],
-                        )));
+                        ));
                   });
             }));
   }
