@@ -12,6 +12,7 @@ macs = ['C1:05:25:89:4A:F0',
 
 #These ids are assigned for RuuviTag in the database
 ruuviId = ['11','12',"13","14","15"]
+doorId = ['3','4','5','6','7']
 
 macsLenght = len(macs)
 
@@ -25,13 +26,6 @@ ruuvi4 = 0
 
 checkMovement = [ruuvi1, ruuvi2, ruuvi3, ruuvi4]
 
-ruuvi1bool = False
-ruuvi2bool = False
-ruuvi3bool = False
-ruuvi4bool = False
-
-firsTimeDetect = [ruuvi1bool, ruuvi2bool, ruuvi3bool, ruuvi4bool]
-
 print('Starting')
 
 for i in range(macsLenght):
@@ -43,29 +37,27 @@ for i in range(macsLenght):
         data = sensor.update()
 
         checkMovement[i] = data['movement_counter']
-        firsTimeDetect[i] = False
 
 while True:
     for i in range(macsLenght):
         mac = macs[i]
         idDevice =  ruuviId[i]
+        idDoor = doorId[i]
 
         sensor = RuuviTag(mac)
         data = sensor.update()
 
         movement = data['movement_counter']
 
-        #Post if detected movement
         if movement != checkMovement[i]:
             j_file = {
             "OpenOrNot": "1",
-            "Door_idDoor": idDevice}
+            "Door_idDoor": idDoor}
 
             messageJ_file = {"Messagetype": "Intruder", "Explanation": "Intruder", "Devices_idDevice": idDevice}
 
             print("Movement detected from", mac)
             checkMovement[i] = movement
-            firsTimeDetect[i] = True
 
             postOne = requests.post(postUrl, json = j_file)
             postMessage = requests.post(messageUrl, json = messageJ_file)
@@ -81,30 +73,6 @@ while True:
             else:
                 print("Error", postMessage)
                 print("MessagePost was unsuccessful.\n")
-            
-            #time.sleep(1)
-        #If no movement detection
+
         else:
-            if firsTimeDetect[i] == True:
-                print("No movement detected with True from", mac)
-                
-                j_file = {
-                "OpenOrNot": "0",
-                "Door_idDoor": idDevice}
-
-                print("Posting 0 from", mac)
-                checkMovement[i] = movement
-
-                postZero = requests.post(postUrl, json = j_file)
-
-                if postZero.status_code == 200:
-                    print("Code 200, success!")
-                else:
-                    print("Error", postZero)
-                    print("The details post was unsuccessful after 0.\n")
-
-                firsTimeDetect[i] = False
-                #time.sleep(1)
-            else:
-                print("No movement detected with False from", mac)
-                #time.sleep(1)
+            print("No movement detected with True from", mac)
