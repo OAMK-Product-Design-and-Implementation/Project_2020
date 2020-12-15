@@ -137,22 +137,31 @@ Widget _ruuvitagListTileAnimated(context, device, model) {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(height: 48, child: Icon(Icons.battery_std)),
-                    Text(device.batterylevel.current.toString() + ' %'),
+                    device.batterylevel.current == 404
+                        ? Text('--')
+                        : Text(device.batterylevel.current.round().toString() +
+                            '%'),
                     Container(
                         height: 48,
                         margin: EdgeInsets.only(left: 8),
                         child: Icon(CupertinoIcons.thermometer)),
-                    Text(device.temperature.current.toString() + ' C'),
+                    device.temperature.current == 404
+                        ? Text('--')
+                        : Text(device.temperature.current.toString() + 'C'),
                     Container(
                         margin: EdgeInsets.only(left: 8),
                         height: 48,
                         child: Icon(CupertinoIcons.tornado)),
-                    Text(device.pressure.current.toString() + ' hPa'),
+                    device.pressure.current == 404
+                        ? Text('--')
+                        : Text(device.pressure.current.toString() + 'hPa'),
                     Container(
                         margin: EdgeInsets.only(left: 8),
                         height: 48,
                         child: Icon(CupertinoIcons.gauge)),
-                    Text(device.humidity.current.toString() + ' %'),
+                    device.humidity.current == 404
+                        ? Text('--')
+                        : Text(device.humidity.current.toString() + '%'),
                   ],
                 ),
               ]));
