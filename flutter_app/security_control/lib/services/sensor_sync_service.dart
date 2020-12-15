@@ -44,6 +44,13 @@ class SensorSyncService {
             _sendPort.send(
                 ["setaddress", _localStorageService.serverAddress.getValue()]);
             break;
+          case "ruuvitagid":
+            for (var item in message[1]) {
+              if (_ruuviTagListMap[item]?.id == null)
+                _ruuviTagListMap[item] = RuuviTag.loading();
+            }
+            _ruuviTagListMapStreamControl.add(_ruuviTagListMap);
+            break;
           case "ruuvitag":
             // Message[1] = id
             // message[2] = ruuvitagJSON: "[[data]]"
@@ -105,6 +112,10 @@ class SensorSyncService {
   void startSync() {
     _sendPort.send("syncruuvitags");
   }
+
+  void updateRuuvitagIDlist() {
+    _sendPort.send("updateRuuviTagIDList");
+  }
 }
 
 void entryPoint(SendPort sendPort) {
@@ -126,6 +137,9 @@ void entryPoint(SendPort sendPort) {
           break;
         case "setaddress":
           _syncRuuviTagIsolate.setAddress(message[1]);
+          break;
+        case "updateRuuviTagIDList":
+          _syncRuuviTagIsolate.syncRuuviTagIDList();
           break;
         case "setruuvitagname":
           // message [1] = id
@@ -170,7 +184,7 @@ class _SyncRuuviTagIsolate {
   Timer _syncTimer;
   Duration _syncDelay;
   String _address;
-  http.Client _client;
+  http.Client _client = http.Client();
 
   String _ruuviTagIDListString;
   List _ruuviTagIDList;
@@ -218,13 +232,13 @@ class _SyncRuuviTagIsolate {
   _sync(Timer timer) {
     syncRuuviTagIDList();
     syncRuuviTags();
-    for (var i in _ruuviTagIDList) {
-      print(_debugTag + i.toString());
-    }
+    // for (var i in _ruuviTagIDList) {
+    //   print(_debugTag + i.toString());
+    // }
   }
 
   // Function to get ruuvitag id JSON from server:
-  syncRuuviTagIDList() async {
+  void syncRuuviTagIDList() async {
     // Get RuuviTag ID's and compare them with local values
     var response;
     try {
@@ -246,6 +260,7 @@ class _SyncRuuviTagIsolate {
           _ruuviTagIDList.add(i[0]);
         }
       }
+      _sendPort.send(["ruuvitagid", _ruuviTagIDList]);
     }
   }
 
