@@ -39,8 +39,7 @@ Widget menuSwitchListTile(
 
 // Action function must take double as parameter: action(value)
 Widget menuSliderListItem(String title, BuildContext context, Function action,
-    double valueToFollow, double maxValue, double minValue,
-    [Function actionOnRelease]) {
+    double valueToFollow, double maxValue, double minValue, model) {
   return new Padding(
       padding: EdgeInsets.all(16),
       child: Column(mainAxisSize: MainAxisSize.max, children: [
@@ -64,17 +63,16 @@ Widget menuSliderListItem(String title, BuildContext context, Function action,
                   Text(valueToFollow.round().toString() + 's'),
                   Expanded(
                     child: Slider(
-                      value: valueToFollow,
-                      max: maxValue,
-                      min: minValue,
-                      label: valueToFollow.round().toString(),
-                      onChanged: (double value) {
-                        action(value);
-                      },
-                      onChangeEnd: actionOnRelease == null
-                          ? null
-                          : actionOnRelease, // if action defined, call it
-                    ),
+                        value: valueToFollow,
+                        max: maxValue,
+                        min: minValue,
+                        label: valueToFollow.round().toString(),
+                        onChanged: (double value) {
+                          action(value);
+                        },
+                        onChangeEnd: (_) {
+                          model.saveServerUpdateInterval();
+                        }),
                   ),
                 ]))
       ]));

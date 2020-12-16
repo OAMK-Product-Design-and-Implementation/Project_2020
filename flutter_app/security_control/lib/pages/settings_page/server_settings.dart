@@ -8,7 +8,6 @@ class ServerSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<SubSettingsViewModel>.reactive(
         onModelReady: (model) => model.initialise(),
-        disposeViewModel: false,
         viewModelBuilder: () => SubSettingsViewModel(),
         builder: (context, model, child) => Scaffold(
             appBar: AppBar(
@@ -20,7 +19,6 @@ class ServerSettingsPage extends StatelessWidget {
               children: [
                 serverAddressTileAnimated(context, model),
                 Divider(),
-                //TODO: Preferences are still updated while sliding, maybe the widget is rebuilding?
                 menuSliderListItem(
                     model.serverUpdateIntervalLabel,
                     context,
@@ -28,7 +26,7 @@ class ServerSettingsPage extends StatelessWidget {
                     model.serverUpdateInterval,
                     model.maxServerUpdateInterval,
                     model.minServerUpdateInterval,
-                    model.saveServerUpdateInterval()),
+                    model),
               ],
             ))));
   }
