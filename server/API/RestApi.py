@@ -152,14 +152,6 @@ def getDeviceLocationStatus():
     data = db.sqlQuery(query)
     return jsonify(data)
 
-# Example GET
-@app.route('/api/devices/get/latestcaratchargestation', methods=['GET'])
-def getDeviceLatestCarAtChargeStation():
-    content = request.get_json()
-    query = "SELECT * FROM LatestCarAtChargeStation"
-    data = db.sqlQuery(query)
-    return jsonify(data)
-
 
 ##################################################
 ############## Android app start #################
@@ -475,17 +467,48 @@ def postEventInactive():
     db.sqlInsert(query)
     return "Post successful"
 
-# Get active OpenOrNots
+# Get active OpenOrNots in (distinct) locations
 @app.route('/api/gopigo/get/actives', methods=['GET'])
 def getGopigoActives():
     content = request.get_json()
-    query = '''SELECT Location.Segment, Door_status.Timestamp
+    query = '''SELECT Devices.idDevice, Location.Segment
                 FROM Door LEFT JOIN Devices ON Door.Devices_idDevice = Devices.idDevice
                 LEFT JOIN Door_status ON Door.idDoor = Door_status.Door_idDoor
                 LEFT JOIN Location ON Devices.idDevice = Location.Devices_idDevice
-                WHERE Door_status.OpenOrNot = "1" AND Door_status.Active = "1" ORDER BY Door_status.Timestamp DESC LIMIT 1'''
+                WHERE Door_status.OpenOrNot = "1" AND Door_status.Active = "1" GROUP BY Location.Segment'''
     data = db.sqlQuery(query)
     return jsonify(data)
+
+
+##################################################
+############### Robot arm start ##################
+
+# Get latest car at charge station and its charge status
+@app.route('/api/devices/get/latestcaratchargestation', methods=['GET'])
+def getDeviceLatestCarAtChargeStation():
+    content = request.get_json()
+    query = '''SELECT Devices.idDevice, Location.Timestamp 
+                FROM Devices INNER JOIN Location ON Devices.idDevice = Location.Devices_idDevice WHERE Segment = "1" ORDER BY Timestamp DESC LIMIT 1'''
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
+# Get the charge status of the charge station
+@app.route('/api/devices/get/chargestationstatus', methods=['GET'])
+def getChargeStationStatus():
+    content = request.get_json()
+    query = '''SELECT Status FROM Charger_Status ORDER BY Timestamp DESC LIMIT 1'''
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
+# Get the charge station log
+@app.route('/api/devices/get/chargestationlog', methods=['GET'])
+def getChargeStationLog():
+    content = request.get_json()
+    query = '''SELECT Devices.idDevice, Devices.DeviceName, Charger_Status.Status, Charger_Status.Timestamp 
+                FROM Devices INNER JOIN Charger_Status ON Devices.idDevice = Charger_Status.Devices_idDevice ORDER BY Timestamp DESC'''
+    data = db.sqlQuery(query)
+    return jsonify(data)
+
 
 #
 # End
