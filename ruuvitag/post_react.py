@@ -16,7 +16,7 @@ doorId = ['3','4','5','6','7']
 
 macsLenght = len(macs)
 
-postUrl = 'http://195.148.21.106/api/ruuvi/post/doorstatus'
+doorUrl = 'http://195.148.21.106/api/ruuvi/post/doorstatus'
 messageUrl = 'http://195.148.21.106/api/devices/post/message'
 
 ruuvi1 = 0
@@ -50,7 +50,7 @@ while True:
         movement = data['movement_counter']
 
         if movement != checkMovement[i]:
-            j_file = {
+            doorJ_file = {
             "OpenOrNot": "1",
             "Door_idDoor": idDoor}
 
@@ -59,7 +59,7 @@ while True:
             print("Movement detected from", mac)
             checkMovement[i] = movement
 
-            postOne = requests.post(postUrl, json = j_file)
+            postOne = requests.post(doorUrl, json = doorJ_file)
             postMessage = requests.post(messageUrl, json = messageJ_file)
 
             if postOne.status_code == 200:
@@ -75,4 +75,4 @@ while True:
                 print("MessagePost was unsuccessful.\n")
 
         else:
-            print("No movement detected with True from", mac)
+            print("No movement detected from", mac)
